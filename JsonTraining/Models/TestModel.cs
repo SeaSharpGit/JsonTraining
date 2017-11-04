@@ -19,7 +19,7 @@
         public Enum EnumTest { get; set; } = Enum.Second;
         #endregion
 
-        public Struct StructTest { get; set; } = new Struct() { Name = "123", Age = 123 };
+        public Struct StructTest { get; set; } = new Struct() { Name = "名字", Age = 123 };
         public string StringTest { get; set; } = "字符串";
         public object ObjectTest { get; set; } = new { Name = "对象" };
 
