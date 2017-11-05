@@ -1,4 +1,6 @@
-﻿namespace JT.Models
+﻿using System;
+
+namespace JsonTraining.Models
 {
     public class TestModel
     {
@@ -16,13 +18,20 @@
         public float FloatTest { get; set; } = 1.23F;
         public decimal DecimalTest { get; set; } = 1.23M;
 
+        public DateTime DateTimeTest { get; set; } = new DateTime(2000, 1, 1);
+
+
+        public bool BoolTest { get; set; } = true;
+        public char CharTest { get; set; } = '1';
+        public byte ByteTest { get; set; } = 5;
         public Enum EnumTest { get; set; } = Enum.Second;
+        public Struct StructTest { get; set; } = new Struct() { Name = "名字", Age = 123 };
         #endregion
 
-        public Struct StructTest { get; set; } = new Struct() { Name = "名字", Age = 123 };
+        #region 引用类型
         public string StringTest { get; set; } = "字符串";
-        public object ObjectTest { get; set; } = new { Name = "对象" };
-
+        public object ObjectTest { get; set; } = new { Name = "对象" }; 
+        #endregion
     }
 
     public struct Struct

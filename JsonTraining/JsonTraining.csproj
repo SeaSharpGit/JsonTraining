@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9300F47D-77A9-4C51-A0BA-A79990B7BD1B}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>JT</RootNamespace>
+    <RootNamespace>JsonTraining</RootNamespace>
     <AssemblyName>JsonTraining</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

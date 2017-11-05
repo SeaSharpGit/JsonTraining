@@ -1,9 +1,9 @@
-﻿using JT.Helpers;
-using JT.Models;
+﻿using JsonTraining.Helpers;
+using JsonTraining.Models;
 using Newtonsoft.Json;
 using System;
 
-namespace JT
+namespace JsonTraining
 {
     class Program
     {

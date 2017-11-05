@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Text;
 
-namespace JT.Helpers
+namespace JsonTraining.Helpers
 {
     public static class JsonHelper
     {
         public static string ToJson(object obj)
         {
             var sb = new StringBuilder();
-            AppendString(obj,ref sb);
+            AppendString(obj, ref sb);
             return sb.ToString();
         }
 
-        private static void AppendString(object obj,ref StringBuilder sb)
+        private static void AppendString(object obj, ref StringBuilder sb)
         {
             if (obj == null)
             {
@@ -35,43 +35,43 @@ namespace JT.Helpers
                     sb.Append("null,");
                     continue;
                 }
-                var type = value.GetType();
-                if (type.IsValueType)
+
+                switch (value.GetType().Name)
                 {
-                    if (type == typeof(char))
-                    {
-                        sb.Append("\"");
-                        if (value.ToString() == "\0")
-                        {
-                            sb.Append("\\u0000");
-                        }
-                        else
-                        {
-                            sb.Append(value.ToString());
-                        }
-                        sb.Append("\"");
-                    }
-                    else if(type==typeof(DateTime))
-                    {
+                    case "Int16":
+                    case "UInt16":
+                    case "Int32":
+                    case "UInt32":
+                    case "Int64":
+                    case "UInt64":
+                    case "Double":
+                    case "Single":
+                    case "Decimal":
+                    case "Byte":
+                    case "Boolean":
+                        sb.Append(value);
+                        break;
+                    case "Enum":
+                        sb.Append((int)value);
+                        break;
+                    case "DateTime":
                         sb.Append("\"");
                         sb.Append(Convert.ToDateTime(value).ToString("s"));
                         sb.Append("\"");
-                    }
-                    else
-                    {
+                        break;
+                    case "Char":
+                        sb.Append("\"");
+                        sb.Append(value.ToString() == "\0" ? "\\u0000" : value.ToString());
+                        sb.Append("\"");
+                        break;
+                    case "String":
+                        sb.Append("\"");
                         sb.Append(value);
-                    }
-                }
-                else if (type == typeof(string))
-                {
-                    sb.Append("\"");
-                    sb.Append(value);
-                    sb.Append("\"");
-                }
-                else
-                {
-                    AppendString(value, ref sb);
-                    //sb.Append(ToJson(value));
+                        sb.Append("\"");
+                        break;
+                    default:
+                        AppendString(value, ref sb);
+                        break;
                 }
                 sb.Append(",");
             }
