@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace JsonTraining.Models
 {
@@ -19,18 +21,26 @@ namespace JsonTraining.Models
         public decimal DecimalTest { get; set; } = 1.23M;
 
         public DateTime DateTimeTest { get; set; } = new DateTime(2000, 1, 1);
-
-
         public bool BoolTest { get; set; } = true;
         public char CharTest { get; set; } = '1';
         public byte ByteTest { get; set; } = 5;
         public Enum EnumTest { get; set; } = Enum.Second;
-        public Struct StructTest { get; set; } = new Struct() { Name = "名字", Age = 123 };
+        public Struct StructTest { get; set; }
+        #endregion
+
+        //public List<int> ListTest { get; set; } = new List<int>() { 1, 2, 3 };
+        //public IEnumerable<Struct> IEnumberable = new List<Struct>();
+        //public int[] ArrayTest { get; set; } = new int[3] { 1, 2, 3 };
+
+        #region Nullable
+        public int? IntNullableTest { get; set; } = null;
+        public int? IntNullableTest2 { get; set; } = 123; 
         #endregion
 
         #region 引用类型
-        public string StringTest { get; set; } = "字符串";
-        public object ObjectTest { get; set; } = new { Name = "对象" }; 
+        public string StringTest { get; set; }
+        // = "字符串";
+        public object ObjectTest { get; set; } = new { Name = "对象" };
         #endregion
     }
 
