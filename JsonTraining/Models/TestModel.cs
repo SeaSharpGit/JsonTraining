@@ -6,6 +6,16 @@ namespace JsonTraining.Models
 {
     public class TestModel
     {
+        //public List<int> ListTest { get; set; } = new List<int>() { 1, 2, 3 };
+        //public IEnumerable<Struct> IEnumberable = new List<Struct>();
+        //public int[] ArrayTest { get; set; } = new int[3] { 1, 2, 3 };
+        
+
+        #region 引用类型
+        public string StringTest { get; set; } = "字符串";
+        public object ObjectTest { get; set; } = new { Name = "对象" };
+        #endregion
+
         #region 值类型
         public short ShortTest { get; set; } = 123;
         public ushort UShortTest { get; set; } = 123;
@@ -28,19 +38,9 @@ namespace JsonTraining.Models
         public Struct StructTest { get; set; }
         #endregion
 
-        //public List<int> ListTest { get; set; } = new List<int>() { 1, 2, 3 };
-        //public IEnumerable<Struct> IEnumberable = new List<Struct>();
-        //public int[] ArrayTest { get; set; } = new int[3] { 1, 2, 3 };
-
-        #region Nullable
+        #region 可空类型Nullable
         public int? IntNullableTest { get; set; } = null;
-        public int? IntNullableTest2 { get; set; } = 123; 
-        #endregion
-
-        #region 引用类型
-        public string StringTest { get; set; }
-        // = "字符串";
-        public object ObjectTest { get; set; } = new { Name = "对象" };
+        public int? IntNullableTest2 { get; set; } = 123;
         #endregion
     }
 
