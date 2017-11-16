@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -26,6 +27,7 @@ namespace JsonTraining.Helpers
 
             var type = obj.GetType();
             var typeName = type.Name;
+
             switch (typeName)
             {
                 case "Int16":
@@ -64,6 +66,26 @@ namespace JsonTraining.Helpers
                     sb.Append(obj);
                     sb.Append("\"");
                     break;
+                case "DataTable":
+                    JsonDataTable(obj as DataTable, ref sb);
+                    break;
+                case "DataSet":
+                    sb.Append("{");
+                    var tables = (obj as DataSet).Tables;
+                    foreach (DataTable item in tables)
+                    {
+                        sb.Append("\"");
+                        sb.Append(item.TableName);
+                        sb.Append("\":");
+                        JsonDataTable(item, ref sb);
+                        sb.Append(",");
+                    }
+                    if (tables.Count > 0)
+                    {
+                        sb.Remove(sb.Length - 1, 1);
+                    }
+                    sb.Append("}");
+                    break;
                 default:
                     if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
                     {
@@ -84,10 +106,12 @@ namespace JsonTraining.Helpers
                     else
                     {
                         sb.Append("{");
+                        var fields = type.GetFields();
                         var propertys = type.GetProperties();
-                        if (propertys.Count() > 0)
+
+                        foreach (var item in fields)
                         {
-                            foreach (var item in propertys)
+                            if (item.IsPublic && !item.IsStatic)
                             {
                                 sb.Append("\"");
                                 sb.Append(item.Name);
@@ -96,12 +120,50 @@ namespace JsonTraining.Helpers
                                 AppendString(value, ref sb);
                                 sb.Append(",");
                             }
+                        }
+
+                        foreach (var item in propertys)
+                        {
+                            sb.Append("\"");
+                            sb.Append(item.Name);
+                            sb.Append("\":");
+                            var value = item.GetValue(obj);
+                            AppendString(value, ref sb);
+                            sb.Append(",");
+                        }
+
+                        if (propertys.Count() > 0 || fields.Count() > 0)
+                        {
                             sb.Remove(sb.Length - 1, 1);
                         }
                         sb.Append("}");
                     }
                     break;
             }
+        }
+
+        private static void JsonDataTable(DataTable dt,ref StringBuilder sb)
+        {
+            sb.Append("[");
+            if (dt.Rows.Count > 0)
+            {
+                foreach (DataRow row in dt.Rows)
+                {
+                    sb.Append("{");
+                    for (int i = 0; i < dt.Columns.Count; i++)
+                    {
+                        sb.Append("\"");
+                        sb.Append(dt.Columns[i].ColumnName);
+                        sb.Append("\":");
+                        AppendString(row[i], ref sb);
+                        sb.Append(",");
+                    }
+                    sb.Remove(sb.Length - 1, 1);
+                    sb.Append("},");
+                }
+                sb.Remove(sb.Length - 1, 1);
+            }
+            sb.Append("]");
         }
 
     }

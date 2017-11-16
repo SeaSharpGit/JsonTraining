@@ -2,23 +2,51 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 
 namespace JsonTraining.Models
 {
     public class TestModel
     {
-        //public int PrivateTest = 1;
-        public DataTable DataTableTest = new DataTable();
+        public TestModel()
+        {
+            //var dt = new DataTable();
+            //dt.Columns.Add("Column0");
+            //dt.Columns.Add("Column1");
+            //dt.Rows.Add(1, 2);
+            //DataTableTest = dt;
 
-        //#region 迭代器
-        //public List<Struct> ListTest { get; set; } = new List<Struct>() { new Struct(), new Struct() };
-        //public ArrayList ArrayListTest { get; set; } = new ArrayList() { 1, "2", 3 };
-        //public int[] ArrayTest { get; set; } = new int[] { 1, 2, 3 }; 
+            //var dt2 = new DataTable("MyDataTable");
+            //dt2.Columns.Add("Column0");
+            //dt2.Columns.Add("Column1");
+            //dt2.Rows.Add(0, 1);
+            //DataSetTest.Tables.Add(dt2);
+        }
+
+        #region 变量
+        public int FiledTest = 1;
+        public Action action = () =>
+        {
+            Debug.WriteLine(123);
+        };
+        #endregion
+        
+
+        //#region DataTable/DataSet
+        //public DataTable DataTableTest { get; set; }
+        //public DataSet DataSetTest { get; set; } = new DataSet();
         //#endregion
+
+
+
 
         //#region 引用类型
         //public string StringTest { get; set; } = "字符串";
         //public object ObjectTest { get; set; } = new { Name = "对象" };
+
+        //public List<Struct> ListTest { get; set; } = new List<Struct>() { new Struct(), new Struct() };
+        //public ArrayList ArrayListTest { get; set; } = new ArrayList() { 1, "2", 3 };
+        //public int[] ArrayTest { get; set; } = new int[] { 1, 2, 3 }; 
         //#endregion
 
         //#region 基础值类型
