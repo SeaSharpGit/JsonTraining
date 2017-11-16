@@ -2,6 +2,7 @@
 using JsonTraining.Models;
 using Newtonsoft.Json;
 using System;
+using System.Data;
 
 namespace JsonTraining
 {
@@ -10,6 +11,10 @@ namespace JsonTraining
         static void Main(string[] args)
         {
             var model = new TestModel();
+            var dt = new DataTable();
+            dt.Columns.Add("A");
+            dt.Columns.Add("B");
+
             Console.WriteLine("*********************************");
             Console.WriteLine("JsonTraining测试结果");
             var a = JsonHelper.ToJson(model);

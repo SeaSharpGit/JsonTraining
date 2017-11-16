@@ -68,18 +68,25 @@ namespace JsonTraining.Helpers
                     if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
                     {
                         sb.Append("[");
+                        var flag = false;
                         foreach (var i in obj as IEnumerable)
                         {
                             AppendString(i, ref sb);
+                            sb.Append(",");
+                            flag = true;
+                        }
+                        if (flag)
+                        {
+                            sb.Remove(sb.Length - 1, 1);
                         }
                         sb.Append("]");
                     }
                     else
                     {
+                        sb.Append("{");
                         var propertys = type.GetProperties();
                         if (propertys.Count() > 0)
                         {
-                            sb.Append("{");
                             foreach (var item in propertys)
                             {
                                 sb.Append("\"");
@@ -90,9 +97,8 @@ namespace JsonTraining.Helpers
                                 sb.Append(",");
                             }
                             sb.Remove(sb.Length - 1, 1);
-                            sb.Append("}");
                         }
-
+                        sb.Append("}");
                     }
                     break;
             }
