@@ -10,6 +10,14 @@ namespace JsonTraining.Helpers
 {
     public static class JsonHelper
     {
+        #region JsonToObject
+        public static T ToObject<T>(this string str)
+        {
+            return default(T);
+        } 
+        #endregion
+
+        #region ObjectToJson
         public static string ToJson(object obj)
         {
             var sb = new StringBuilder();
@@ -205,6 +213,7 @@ namespace JsonTraining.Helpers
                 sb.Remove(sb.Length - 1, 1);
             }
             sb.Append("]");
-        }
+        } 
+        #endregion
     }
 }
