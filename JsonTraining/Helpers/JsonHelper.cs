@@ -86,6 +86,10 @@ namespace JsonTraining.Helpers
                     }
                     sb.Append("}");
                     break;
+                case "Action":
+                case "Func`1":
+                    //委托暂不支持
+                    break;
                 default:
                     if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
                     {
@@ -142,7 +146,44 @@ namespace JsonTraining.Helpers
             }
         }
 
-        private static void JsonDataTable(DataTable dt,ref StringBuilder sb)
+        private static void JsonObject(object obj, ref StringBuilder sb)
+        {
+            var type = obj.GetType();
+            sb.Append("{");
+            var fields = type.GetFields();
+            var propertys = type.GetProperties();
+
+            foreach (var item in fields)
+            {
+                if (item.IsPublic && !item.IsStatic)
+                {
+                    sb.Append("\"");
+                    sb.Append(item.Name);
+                    sb.Append("\":");
+                    var value = item.GetValue(obj);
+                    AppendString(value, ref sb);
+                    sb.Append(",");
+                }
+            }
+
+            foreach (var item in propertys)
+            {
+                sb.Append("\"");
+                sb.Append(item.Name);
+                sb.Append("\":");
+                var value = item.GetValue(obj);
+                AppendString(value, ref sb);
+                sb.Append(",");
+            }
+
+            if (propertys.Count() > 0 || fields.Count() > 0)
+            {
+                sb.Remove(sb.Length - 1, 1);
+            }
+            sb.Append("}");
+        }
+
+        private static void JsonDataTable(DataTable dt, ref StringBuilder sb)
         {
             sb.Append("[");
             if (dt.Rows.Count > 0)
@@ -165,6 +206,5 @@ namespace JsonTraining.Helpers
             }
             sb.Append("]");
         }
-
     }
 }
