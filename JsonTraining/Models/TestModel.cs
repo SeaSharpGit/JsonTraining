@@ -23,23 +23,9 @@ namespace JsonTraining.Models
             DataSetTest.Tables.Add(dt2);
         }
 
-
         #region 变量
         public int FiledTest = 1;
-        #endregion
-
-        #region DataTable/DataSet
-        public DataTable DataTableTest { get; set; }
-        public DataSet DataSetTest { get; set; } = new DataSet();
-        #endregion
-
-        #region 基础引用类型
-        public string StringTest { get; set; } = "字符串";
-        public object ObjectTest { get; set; } = new { Name = "对象" };
-
-        public List<Struct> ListTest { get; set; } = new List<Struct>() { new Struct(), new Struct() };
-        public ArrayList ArrayListTest { get; set; } = new ArrayList() { 1, "2", 3 };
-        public int[] ArrayTest { get; set; } = new int[] { 1, 2, 3 };
+        public Struct StructFiledTest;
         #endregion
 
         #region 基础值类型
@@ -60,7 +46,7 @@ namespace JsonTraining.Models
         public bool BoolTest { get; set; } = true;
         public char CharTest { get; set; } = '1';
         public byte ByteTest { get; set; } = 5;
-        public Enum EnumTest { get; set; } = Enum.Second;
+        public Enum EnumTest { get; set; } = Enum1.Second;
         public Struct StructTest { get; set; }
         #endregion
 
@@ -68,6 +54,21 @@ namespace JsonTraining.Models
         public int? IntNullableTest { get; set; } = null;
         public int? IntNullableTest2 { get; set; } = 123;
         #endregion
+
+        #region DataTable/DataSet
+        public DataTable DataTableTest { get; set; }
+        public DataSet DataSetTest { get; set; } = new DataSet();
+        #endregion
+
+        #region 基础引用类型
+        public string StringTest { get; set; } = "字符串";
+        public object ObjectTest { get; set; } = new { Name = "对象" };
+
+        public List<Struct> ListTest { get; set; } = new List<Struct>() { new Struct(), new Struct() };
+        public ArrayList ArrayListTest { get; set; } = new ArrayList() { 1, "2", 3 };
+        public int[] ArrayTest { get; set; } = new int[] { 1, 2, 3 };
+        #endregion
+
     }
 
     public struct Struct
@@ -76,7 +77,7 @@ namespace JsonTraining.Models
         public int Age { get; set; }
     }
 
-    public enum Enum
+    public enum Enum1
     {
         First,
         Second

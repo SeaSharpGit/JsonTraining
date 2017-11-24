@@ -13,9 +13,77 @@ namespace JsonTraining.Helpers
         #region JsonToObject
         public static T ToObject<T>(this string str)
         {
-            return default(T);
-        } 
+            if (str == null)
+            {
+                throw new ArgumentNullException();
+            }
+            var model = default(T);
+            var type = typeof(T);
+            var fullName = type.FullName;
+            switch (fullName)
+            {
+                case "System.Int16":
+                case "System.UInt16":
+                case "System.Int32":
+                case "System.UInt32":
+                case "System.Int64":
+                case "System.UInt64":
+                case "System.Double":
+                case "System.Single":
+                case "System.Decimal":
+                case "System.Byte":
+                    sb.Append(obj);
+                    break;
+                case "System.Boolean":
+                    sb.Append(obj.ToString().ToLower());
+                    break;
+                case "System.DateTime":
+                    sb.Append("\"");
+                    sb.Append(Convert.ToDateTime(obj).ToString("s"));
+                    sb.Append("\"");
+                    break;
+                case "System.Char":
+                    sb.Append("\"");
+                    sb.Append(obj.ToString() == "\0" ? "\\u0000" : obj.ToString());
+                    sb.Append("\"");
+                    break;
+                case "System.String":
+                    sb.Append("\"");
+                    sb.Append(obj);
+                    sb.Append("\"");
+                    break;
+                case "System.Data.DataTable":
+                    DataTableToJson(obj as DataTable, ref sb);
+                    break;
+                case "System.Data.DataSet":
+                    DataSetToJson(obj as DataSet, ref sb);
+                    break;
+                case "System.Action":
+                    //委托暂不支持
+                    break;
+                default:
+                    if (type.IsEnum)
+                    {
+                        sb.Append((int) obj);
+                    }
+                    else if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
+                    {
+                        IEnumerableToJson(obj as IEnumerable, ref sb);
+}
+                    else if (type.Name == "Func`1")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        ObjectToJson(obj, ref sb);
+                    }
+                    break;
+            }
+            return model;
+        }
         #endregion
+
 
         #region ObjectToJson
         public static string ToJson(object obj)
@@ -34,127 +102,71 @@ namespace JsonTraining.Helpers
             }
 
             var type = obj.GetType();
-            var typeName = type.Name;
-
-            switch (typeName)
+            var fullName = type.FullName;
+            switch (fullName)
             {
-                case "Int16":
-                case "UInt16":
-                case "Int32":
-                case "UInt32":
-                case "Int64":
-                case "UInt64":
-                case "Double":
-                case "Single":
-                case "Decimal":
-                case "Byte":
+                case "System.Int16":
+                case "System.UInt16":
+                case "System.Int32":
+                case "System.UInt32":
+                case "System.Int64":
+                case "System.UInt64":
+                case "System.Double":
+                case "System.Single":
+                case "System.Decimal":
+                case "System.Byte":
                     sb.Append(obj);
                     break;
-                case "Boolean":
+                case "System.Boolean":
                     sb.Append(obj.ToString().ToLower());
                     break;
-                case "Enum":
-                    sb.Append((int)obj);
-                    break;
-                case "DateTime":
+                case "System.DateTime":
                     sb.Append("\"");
                     sb.Append(Convert.ToDateTime(obj).ToString("s"));
                     sb.Append("\"");
                     break;
-                case "Char":
+                case "System.Char":
                     sb.Append("\"");
                     sb.Append(obj.ToString() == "\0" ? "\\u0000" : obj.ToString());
                     sb.Append("\"");
                     break;
-                case "Nullable`1":
-                    sb.Append(obj);
-                    break;
-                case "String":
+                case "System.String":
                     sb.Append("\"");
                     sb.Append(obj);
                     sb.Append("\"");
                     break;
-                case "DataTable":
-                    JsonDataTable(obj as DataTable, ref sb);
+                case "System.Data.DataTable":
+                    DataTableToJson(obj as DataTable, ref sb);
                     break;
-                case "DataSet":
-                    sb.Append("{");
-                    var tables = (obj as DataSet).Tables;
-                    foreach (DataTable item in tables)
-                    {
-                        sb.Append("\"");
-                        sb.Append(item.TableName);
-                        sb.Append("\":");
-                        JsonDataTable(item, ref sb);
-                        sb.Append(",");
-                    }
-                    if (tables.Count > 0)
-                    {
-                        sb.Remove(sb.Length - 1, 1);
-                    }
-                    sb.Append("}");
+                case "System.Data.DataSet":
+                    DataSetToJson(obj as DataSet, ref sb);
                     break;
-                case "Action":
-                case "Func`1":
+                case "System.Action":
                     //委托暂不支持
                     break;
                 default:
-                    if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
+                    if (type.IsEnum)
                     {
-                        sb.Append("[");
-                        var flag = false;
-                        foreach (var i in obj as IEnumerable)
-                        {
-                            AppendString(i, ref sb);
-                            sb.Append(",");
-                            flag = true;
-                        }
-                        if (flag)
-                        {
-                            sb.Remove(sb.Length - 1, 1);
-                        }
-                        sb.Append("]");
+                        sb.Append((int)obj);
+                    }
+                    else if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
+                    {
+                        IEnumerableToJson(obj as IEnumerable, ref sb);
+                    }
+                    else if (type.Name == "Func`1")
+                    {
+                        break;
                     }
                     else
                     {
-                        sb.Append("{");
-                        var fields = type.GetFields();
-                        var propertys = type.GetProperties();
-
-                        foreach (var item in fields)
-                        {
-                            if (item.IsPublic && !item.IsStatic)
-                            {
-                                sb.Append("\"");
-                                sb.Append(item.Name);
-                                sb.Append("\":");
-                                var value = item.GetValue(obj);
-                                AppendString(value, ref sb);
-                                sb.Append(",");
-                            }
-                        }
-
-                        foreach (var item in propertys)
-                        {
-                            sb.Append("\"");
-                            sb.Append(item.Name);
-                            sb.Append("\":");
-                            var value = item.GetValue(obj);
-                            AppendString(value, ref sb);
-                            sb.Append(",");
-                        }
-
-                        if (propertys.Count() > 0 || fields.Count() > 0)
-                        {
-                            sb.Remove(sb.Length - 1, 1);
-                        }
-                        sb.Append("}");
+                        ObjectToJson(obj, ref sb);
                     }
                     break;
             }
         }
 
-        private static void JsonObject(object obj, ref StringBuilder sb)
+        #region ObjectToJson
+        private static void ObjectToJson(object obj, ref StringBuilder sb)
         {
             var type = obj.GetType();
             sb.Append("{");
@@ -190,8 +202,10 @@ namespace JsonTraining.Helpers
             }
             sb.Append("}");
         }
+        #endregion
 
-        private static void JsonDataTable(DataTable dt, ref StringBuilder sb)
+        #region DataTableToJson
+        private static void DataTableToJson(DataTable dt, ref StringBuilder sb)
         {
             sb.Append("[");
             if (dt.Rows.Count > 0)
@@ -213,7 +227,49 @@ namespace JsonTraining.Helpers
                 sb.Remove(sb.Length - 1, 1);
             }
             sb.Append("]");
-        } 
+        }
+        #endregion
+
+        #region DataSetToJson
+        private static void DataSetToJson(DataSet ds, ref StringBuilder sb)
+        {
+            sb.Append("{");
+            var tables = ds.Tables;
+            foreach (DataTable item in tables)
+            {
+                sb.Append("\"");
+                sb.Append(item.TableName);
+                sb.Append("\":");
+                DataTableToJson(item, ref sb);
+                sb.Append(",");
+            }
+            if (tables.Count > 0)
+            {
+                sb.Remove(sb.Length - 1, 1);
+            }
+            sb.Append("}");
+        }
+        #endregion
+
+        #region IEnumerableToJson
+        private static void IEnumerableToJson(IEnumerable items, ref StringBuilder sb)
+        {
+            sb.Append("[");
+            var flag = false;
+            foreach (var i in items)
+            {
+                AppendString(i, ref sb);
+                sb.Append(",");
+                flag = true;
+            }
+            if (flag)
+            {
+                sb.Remove(sb.Length - 1, 1);
+            }
+            sb.Append("]");
+        }
+        #endregion
+
         #endregion
     }
 }
