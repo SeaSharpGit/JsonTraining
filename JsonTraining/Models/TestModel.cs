@@ -26,6 +26,14 @@ namespace JsonTraining.Models
         #region 变量
         public int FiledTest = 1;
         public Struct StructFiledTest;
+        //public Action action = () =>
+        //{
+
+        //};
+        //public Func<int> func = () =>
+        //{
+        //    return 1;
+        //};
         #endregion
 
         #region 基础值类型
@@ -44,9 +52,9 @@ namespace JsonTraining.Models
 
         public DateTime DateTimeTest { get; set; } = new DateTime(2000, 1, 1);
         public bool BoolTest { get; set; } = true;
-        public char CharTest { get; set; } = '1';
+        public char CharTest { get; set; } = '5';
         public byte ByteTest { get; set; } = 5;
-        public Enum EnumTest { get; set; } = Enum1.Second;
+        public Enum1 EnumTest { get; set; } = Enum1.Second;
         public Struct StructTest { get; set; }
         #endregion
 
@@ -61,7 +69,7 @@ namespace JsonTraining.Models
         #endregion
 
         #region 基础引用类型
-        public string StringTest { get; set; } = "字符串";
+        public string StringTest { get; set; } = "字符串{[\"";
         public object ObjectTest { get; set; } = new { Name = "对象" };
 
         public List<Struct> ListTest { get; set; } = new List<Struct>() { new Struct(), new Struct() };

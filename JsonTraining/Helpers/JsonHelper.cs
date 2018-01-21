@@ -17,46 +17,63 @@ namespace JsonTraining.Helpers
             {
                 throw new ArgumentNullException();
             }
-            var model = default(T);
+            return CreateObject<T>(str);
+        }
+
+        private static T CreateObject<T>(string str)
+        {
             var type = typeof(T);
             var fullName = type.FullName;
+            object model = default(T);
             switch (fullName)
             {
                 case "System.Int16":
+                    model = Convert.ToInt16(str);
+                    break;
                 case "System.UInt16":
+                    model = Convert.ToUInt16(str);
+                    break;
                 case "System.Int32":
+                    model = Convert.ToInt32(str);
+                    break;
                 case "System.UInt32":
+                    model = Convert.ToUInt32(str);
+                    break;
                 case "System.Int64":
+                    model = Convert.ToInt64(str);
+                    break;
                 case "System.UInt64":
+                    model = Convert.ToUInt64(str);
+                    break;
                 case "System.Double":
+                    model = Convert.ToDouble(str);
+                    break;
                 case "System.Single":
+                    model = Convert.ToSingle(str);
+                    break;
                 case "System.Decimal":
+                    model = Convert.ToDecimal(str);
+                    break;
                 case "System.Byte":
-                    sb.Append(obj);
+                    model = Convert.ToByte(str);
                     break;
                 case "System.Boolean":
-                    sb.Append(obj.ToString().ToLower());
+                    model = Convert.ToBoolean(str);
                     break;
                 case "System.DateTime":
-                    sb.Append("\"");
-                    sb.Append(Convert.ToDateTime(obj).ToString("s"));
-                    sb.Append("\"");
+                    model = Convert.ToDateTime(str.Substring(1, str.Length - 2));
                     break;
                 case "System.Char":
-                    sb.Append("\"");
-                    sb.Append(obj.ToString() == "\0" ? "\\u0000" : obj.ToString());
-                    sb.Append("\"");
+                    model = Convert.ToChar(str.Substring(1, str.Length - 2));
                     break;
                 case "System.String":
-                    sb.Append("\"");
-                    sb.Append(obj);
-                    sb.Append("\"");
+                    model = str.Substring(1, str.Length - 2);
                     break;
                 case "System.Data.DataTable":
-                    DataTableToJson(obj as DataTable, ref sb);
+                    //DataTableToJson(obj as DataTable, ref sb);
                     break;
                 case "System.Data.DataSet":
-                    DataSetToJson(obj as DataSet, ref sb);
+                    //DataSetToJson(obj as DataSet, ref sb);
                     break;
                 case "System.Action":
                     //委托暂不支持
@@ -64,23 +81,76 @@ namespace JsonTraining.Helpers
                 default:
                     if (type.IsEnum)
                     {
-                        sb.Append((int) obj);
+                        model = Enum.Parse(type, str);
                     }
-                    else if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
-                    {
-                        IEnumerableToJson(obj as IEnumerable, ref sb);
-}
+                    //else if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
+                    //{
+                    //    IEnumerableToJson(obj as IEnumerable, ref sb);
+                    //}
                     else if (type.Name == "Func`1")
                     {
                         break;
                     }
                     else
                     {
-                        ObjectToJson(obj, ref sb);
+                        if (str == "null")
+                        {
+                            model = null;
+                        }
+                        else
+                        {
+                            str = str.Substring(1, str.Length - 2) + ",";
+                            var list = new Dictionary<string, string>();
+                            while (str.Length > 0)
+                            {
+                                var pIndex = str.IndexOf("\"", 1);
+                                var pKey = str.Substring(1, pIndex - 1);
+                                var value = str.Substring(pIndex + 2);
+                                var isString = false;//引号
+                                var dCount = 0;//大括号
+                                var jCount = 0;//尖括号
+                                for (int i = 0; i < value.Length; i++)
+                                {
+                                    var c = value[i];
+                                    if (c == '"')
+                                    {
+                                        isString = !isString;
+                                    }
+
+                                    if (isString)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        switch (c)
+                                        {
+                                            case ',':
+                                                break;
+
+                                        }
+                                        if (c == ',' && dCount == 0 && jCount == 0)
+                                        {
+                                            //Todo拿出来
+
+                                            //重新改写字符串
+                                        }
+                                        else
+                                        {
+                                            if()
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            //var pIndex = text.IndexOf('"');
+                            //var pName = text.Substring(0, pIndex);
+                        }
                     }
                     break;
             }
-            return model;
+            return (T)model;
         }
         #endregion
 
@@ -132,7 +202,9 @@ namespace JsonTraining.Helpers
                     break;
                 case "System.String":
                     sb.Append("\"");
-                    sb.Append(obj);
+                    //做一个处理，作为反序列化时判断依据
+                    var str = obj.ToString().Replace("\"", "\\\"");
+                    sb.Append(str);
                     sb.Append("\"");
                     break;
                 case "System.Data.DataTable":
@@ -155,6 +227,7 @@ namespace JsonTraining.Helpers
                     }
                     else if (type.Name == "Func`1")
                     {
+                        //委托暂不支持
                         break;
                     }
                     else
