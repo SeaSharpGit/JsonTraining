@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -11,7 +12,7 @@ namespace JsonTraining.Helpers
     public static class JsonHelper
     {
         #region JsonToObject
-        public static T ToObject<T>(this string str)
+        public static T ToJsonObject<T>(this string str)
         {
             if (str == null)
             {
@@ -99,53 +100,88 @@ namespace JsonTraining.Helpers
                         }
                         else
                         {
-                            str = str.Substring(1, str.Length - 2) + ",";
                             var list = new Dictionary<string, string>();
-                            while (str.Length > 0)
+                            str = str.Substring(1, str.Length - 2) + ",";
+                            while (!String.IsNullOrEmpty(str))
                             {
                                 var pIndex = str.IndexOf("\"", 1);
                                 var pKey = str.Substring(1, pIndex - 1);
                                 var value = str.Substring(pIndex + 2);
                                 var isString = false;//引号
-                                var dCount = 0;//大括号
-                                var jCount = 0;//尖括号
+                                var dCount = 0;//大括号{}
+                                var jCount = 0;//尖括号[]
+                                var isAdd = false;
                                 for (int i = 0; i < value.Length; i++)
                                 {
-                                    var c = value[i];
-                                    if (c == '"')
+                                    if (isAdd)
                                     {
-                                        isString = !isString;
+                                        break;
                                     }
-
-                                    if (isString)
+                                    switch (value[i])
                                     {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        switch (c)
-                                        {
-                                            case ',':
-                                                break;
-
-                                        }
-                                        if (c == ',' && dCount == 0 && jCount == 0)
-                                        {
-                                            //Todo拿出来
-
-                                            //重新改写字符串
-                                        }
-                                        else
-                                        {
-                                            if()
-                                        }
+                                        case '"':
+                                            if (isString)
+                                            {
+                                                if (value[i - 1] != '\\')
+                                                {
+                                                    isString = false;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                isString = true;
+                                            }
+                                            break;
+                                        case '{':
+                                            if (!isString)
+                                            {
+                                                dCount++;
+                                            }
+                                            break;
+                                        case '}':
+                                            if (!isString)
+                                            {
+                                                dCount--;
+                                            }
+                                            break;
+                                        case '[':
+                                            if (!isString)
+                                            {
+                                                jCount++;
+                                            }
+                                            break;
+                                        case ']':
+                                            if (!isString)
+                                            {
+                                                jCount--;
+                                            }
+                                            break;
+                                        case ',':
+                                            if (!isString && dCount == 0 && jCount == 0)
+                                            {
+                                                var pValue = value.Substring(0, i);
+                                                list.Add(pKey, pValue);
+                                                str = value.Substring(i + 1);
+                                                Debug.WriteLine("key:" + pKey + "===value:" + pValue);
+                                                isAdd = true;
+                                            }
+                                            break;
                                     }
                                 }
-
                             }
 
-                            //var pIndex = text.IndexOf('"');
-                            //var pName = text.Substring(0, pIndex);
+                            var fields = type.GetFields();
+                            var propertys = type.GetProperties();
+
+                            foreach (var item in list)
+                            {
+                                var field = fields.Where(f => f.IsPublic && !f.IsStatic && f.Name == item.Key).FirstOrDefault();
+                                if (field != null)
+                                {
+                                    var value = CreateObject<object>(item.Value);
+                                    field.SetValue(model, value);
+                                }
+                            }
                         }
                     }
                     break;

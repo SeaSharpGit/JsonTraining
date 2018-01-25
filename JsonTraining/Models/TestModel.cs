@@ -25,7 +25,7 @@ namespace JsonTraining.Models
 
         #region 变量
         public int FiledTest = 1;
-        public Struct StructFiledTest;
+        public StructModel StructFiledTest;
         //public Action action = () =>
         //{
 
@@ -54,8 +54,8 @@ namespace JsonTraining.Models
         public bool BoolTest { get; set; } = true;
         public char CharTest { get; set; } = '5';
         public byte ByteTest { get; set; } = 5;
-        public Enum1 EnumTest { get; set; } = Enum1.Second;
-        public Struct StructTest { get; set; }
+        public EnumModel EnumTest { get; set; } = EnumModel.Second;
+        public StructModel StructTest { get; set; }
         #endregion
 
         #region 可空类型Nullable
@@ -72,20 +72,20 @@ namespace JsonTraining.Models
         public string StringTest { get; set; } = "字符串{[\"";
         public object ObjectTest { get; set; } = new { Name = "对象" };
 
-        public List<Struct> ListTest { get; set; } = new List<Struct>() { new Struct(), new Struct() };
+        public List<StructModel> ListTest { get; set; } = new List<StructModel>() { new StructModel(), new StructModel() };
         public ArrayList ArrayListTest { get; set; } = new ArrayList() { 1, "2", 3 };
         public int[] ArrayTest { get; set; } = new int[] { 1, 2, 3 };
         #endregion
 
     }
 
-    public struct Struct
+    public struct StructModel
     {
         public string Name { get; set; }
         public int Age { get; set; }
     }
 
-    public enum Enum1
+    public enum EnumModel
     {
         First,
         Second
