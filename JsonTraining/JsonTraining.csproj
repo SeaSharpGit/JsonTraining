@@ -45,7 +45,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\JsonHelper.cs" />
+    <Compile Include="Converters\JsonHelper.jo.cs" />
+    <Compile Include="Converters\JsonHelper.oj.cs" />
+    <Compile Include="Models\DataType.cs" />
+    <Compile Include="Models\DataTypeMappings.cs" />
+    <Compile Include="Models\InitType.cs" />
     <Compile Include="Models\TestModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

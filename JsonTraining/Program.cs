@@ -11,28 +11,27 @@ namespace JsonTraining
         static void Main(string[] args)
         {
             #region 序列化
-            //var model = new TestModel();
-            //Console.WriteLine("*********************************");
-            //Console.WriteLine("JsonTraining测试结果");
-            //var a = JsonHelper.ToJson(model);
-            //Console.WriteLine(a);
-            //Console.WriteLine("*********************************");
-            //Console.WriteLine("Json.NET测试结果");
-            //var b = JsonConvert.SerializeObject(model);
-            //Console.WriteLine(b);
-            //Console.WriteLine("*********************************");
-            //Console.WriteLine(a == b ? "相同" : "不相同");
-            //Console.WriteLine("*********************************");
+            var model = new TestModel(InitType.Full);
+            Console.WriteLine("*********************************");
+            Console.WriteLine("JsonTraining测试结果");
+            var a = JsonHelper.ConvertToJson(model);
+            Console.WriteLine(a);
+            Console.WriteLine("*********************************");
+            Console.WriteLine("Json.NET测试结果");
+            var b = JsonConvert.SerializeObject(model);
+            Console.WriteLine(b);
+            Console.WriteLine("*********************************");
+            Console.WriteLine(a == b ? "相同" : "不相同");
+            Console.WriteLine("*********************************");
             #endregion
 
 
             #region 反序列化
 
-            var model = new TestModel();
-
-            var str = JsonHelper.ToJson(model);
-            Console.WriteLine("字符串是：" + str);
-            var c = str.ToJsonObject<TestModel>();
+            //var model = new TestModel(InitType.Full);
+            //var str = JsonHelper.ConvertToJson(model);
+            //Console.WriteLine("字符串是：" + str);
+            //var c = JsonHelper.ConvertToJsonObject<TestModel>(str);
 
             #endregion
 
