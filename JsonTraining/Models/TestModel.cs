@@ -14,6 +14,7 @@ namespace JsonTraining.Models
             dt.Columns.Add("Column0");
             dt.Columns.Add("Column1");
             dt.Rows.Add(1, 2);
+            dt.Rows.Add(3, 4);
             DataTableTest = dt;
 
             var dt2 = new DataTable("MyDataTable");

@@ -18,14 +18,14 @@ namespace JsonTraining.Helpers
             {
                 throw new ArgumentNullException();
             }
-            return CreateObject<T>(str);
+            var type = typeof(T);
+            return (T)CreateObject(type, str);
         }
 
-        private static T CreateObject<T>(string str)
+        private static object CreateObject(Type type, string str)
         {
-            var type = typeof(T);
+            object model = Activator.CreateInstance(type);
             var fullName = type.FullName;
-            object model = default(T);
             switch (fullName)
             {
                 case "System.Int16":
@@ -178,7 +178,7 @@ namespace JsonTraining.Helpers
                                 var field = fields.Where(f => f.IsPublic && !f.IsStatic && f.Name == item.Key).FirstOrDefault();
                                 if (field != null)
                                 {
-                                    var value = CreateObject<object>(item.Value);
+                                    var value = CreateObject(field.FieldType, item.Value);
                                     field.SetValue(model, value);
                                 }
                             }
@@ -186,7 +186,7 @@ namespace JsonTraining.Helpers
                     }
                     break;
             }
-            return (T)model;
+            return model;
         }
         #endregion
 
