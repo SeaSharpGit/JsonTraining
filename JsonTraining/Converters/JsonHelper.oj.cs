@@ -12,7 +12,6 @@ namespace JsonTraining.Helpers
 {
     public static partial class JsonHelper
     {
-        #region ConvertToJson
         public static string ConvertToJson(object obj)
         {
             var sb = new StringBuilder();
@@ -31,6 +30,10 @@ namespace JsonTraining.Helpers
             var dataType = DataTypeMappings.GetDataType(type);
             switch (dataType)
             {
+                case DataType.SByte:
+                case DataType.SByteNullable:
+                case DataType.Byte:
+                case DataType.ByteNullable:
                 case DataType.Int16:
                 case DataType.Int16Nullable:
                 case DataType.UInt16:
@@ -51,29 +54,36 @@ namespace JsonTraining.Helpers
                 case DataType.DecimalNullable:
                     sb.Append(obj);
                     break;
-
+                case DataType.Boolean:
+                case DataType.BooleanNullable:
+                    BoolToJson(obj, ref sb);
+                    break;
+                case DataType.Char:
+                case DataType.CharNullable:
+                    CharToJson(obj, ref sb);
+                    break;
                 case DataType.DateTime:
                 case DataType.DateTimeNullable:
-                    sb.Append("\"");
-                    sb.Append(Convert.ToDateTime(obj).ToString("s"));
-                    sb.Append("\"");
+                    DateTimeToJson(obj, ref sb);
                     break;
                 case DataType.DateTimeOffset:
                 case DataType.DateTimeOffsetNullable:
-                    sb.Append("\"");
-                    if(obj is DateTimeOffset off)
-                    {
-                        sb.Append(off.ToString("s"));
-                    }
-                    
-                    sb.Append("\"");
+                    DateTimeOffsetToJson(obj, ref sb);
                     break;
                 case DataType.TimeSpan:
                 case DataType.TimeSpanNullable:
-                    sb.Append("\"");
-                    //sb.Append(Convert.ToDateTime(obj).ToString("s"));
-                    sb.Append("\"");
+                    TimeSpanToJson(obj, ref sb);
                     break;
+                case DataType.String:
+                    StringToJson(obj, ref sb);
+                    break;
+                case DataType.DataTable:
+                    DataTableToJson(obj as DataTable, ref sb);
+                    break;
+                case DataType.DataSet:
+                    DataSetToJson(obj as DataSet, ref sb);
+                    break;
+
 
 
 
@@ -91,44 +101,6 @@ namespace JsonTraining.Helpers
             //var fullName = type.FullName;
             //switch (fullName)
             //{
-            //    case "System.Int16":
-            //    case "System.UInt16":
-            //    case "System.Int32":
-            //    case "System.UInt32":
-            //    case "System.Int64":
-            //    case "System.UInt64":
-            //    case "System.Double":
-            //    case "System.Single":
-            //    case "System.Decimal":
-            //    case "System.Byte":
-            //        sb.Append(obj);
-            //        break;
-            //    case "System.Boolean":
-            //        sb.Append(obj.ToString().ToLower());
-            //        break;
-            //    case "System.DateTime":
-            //        sb.Append("\"");
-            //        sb.Append(Convert.ToDateTime(obj).ToString("s"));
-            //        sb.Append("\"");
-            //        break;
-            //    case "System.Char":
-            //        sb.Append("\"");
-            //        sb.Append(obj.ToString() == "\0" ? "\\u0000" : obj.ToString());
-            //        sb.Append("\"");
-            //        break;
-            //    case "System.String":
-            //        sb.Append("\"");
-            //        //做一个处理，作为反序列化时判断依据
-            //        var str = obj.ToString().Replace("\"", "\\\"");
-            //        sb.Append(str);
-            //        sb.Append("\"");
-            //        break;
-            //    case "System.Data.DataTable":
-            //        DataTableToJson(obj as DataTable, ref sb);
-            //        break;
-            //    case "System.Data.DataSet":
-            //        DataSetToJson(obj as DataSet, ref sb);
-            //        break;
             //    case "System.Action":
             //        //委托暂不支持
             //        break;
@@ -153,6 +125,69 @@ namespace JsonTraining.Helpers
             //        break;
             //}
         }
+
+        #region BoolToJson
+        private static void BoolToJson(object obj, ref StringBuilder sb)
+        {
+            sb.Append(obj.ToString().ToLower());
+        }
+        #endregion
+
+        #region CharToJson
+        private static void CharToJson(object obj, ref StringBuilder sb)
+        {
+            sb.Append("\"");
+            sb.Append(obj.ToString() == "\0" ? "\\u0000" : obj.ToString());
+            sb.Append("\"");
+        }
+        #endregion
+
+        #region StringToJson
+        private static void StringToJson(object obj, ref StringBuilder sb)
+        {
+            sb.Append("\"");
+            //做一个处理，作为反序列化时判断依据
+            var str = obj.ToString().Replace("\"", "\\\"");
+            sb.Append(str);
+            sb.Append("\"");
+        }
+        #endregion
+
+        #region TimeSpanToJson
+        private static void TimeSpanToJson(object obj, ref StringBuilder sb)
+        {
+            if (obj is TimeSpan ts)
+            {
+                sb.Append("\"");
+                sb.Append(ts.ToString());
+                sb.Append("\"");
+            }
+        }
+        #endregion
+
+        #region DateTimeOffsetToJson
+        private static void DateTimeOffsetToJson(object obj, ref StringBuilder sb)
+        {
+            if (obj is DateTimeOffset off)
+            {
+                sb.Append("\"");
+                sb.Append(off.ToString("yyyy-MM-ddTHH:mm:sszzz"));
+                sb.Append("\"");
+            }
+        }
+        #endregion
+
+        #region DateTimeToJson
+        private static void DateTimeToJson(object obj, ref StringBuilder sb)
+        {
+            if (obj is DateTime time)
+            {
+                sb.Append("\"");
+                sb.Append(time.ToString("s"));
+                sb.Append("\"");
+            }
+        }
+        #endregion
 
         #region ObjectToJson
         private static void ObjectToJson(object obj, ref StringBuilder sb)
@@ -240,6 +275,11 @@ namespace JsonTraining.Helpers
         }
         #endregion
 
+
+
+
+
+
         #region IEnumerableToJson
         private static void IEnumerableToJson(IEnumerable items, ref StringBuilder sb)
         {
@@ -257,8 +297,6 @@ namespace JsonTraining.Helpers
             }
             sb.Append("]");
         }
-        #endregion
-
         #endregion
     }
 }

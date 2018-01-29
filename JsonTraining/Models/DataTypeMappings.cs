@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,10 @@ namespace JsonTraining.Models
         private static Dictionary<Type, DataType> _Mappings = new Dictionary<Type, DataType>()
         {
             {typeof(object),DataType.Object },
+            {typeof(sbyte),DataType.SByte },
+            {typeof(sbyte?),DataType.SByteNullable },
+            {typeof(byte),DataType.Byte },
+            {typeof(byte?),DataType.ByteNullable },
             {typeof(short),DataType.Int16 },
             {typeof(short?),DataType.Int16Nullable },
             {typeof(ushort),DataType.UInt16 },
@@ -35,6 +40,13 @@ namespace JsonTraining.Models
             {typeof(DateTimeOffset?),DataType.DateTimeOffsetNullable },
             {typeof(TimeSpan),DataType.TimeSpan },
             {typeof(TimeSpan?),DataType.TimeSpanNullable },
+            {typeof(string),DataType.String },
+            {typeof(bool),DataType.Boolean },
+            {typeof(bool?),DataType.BooleanNullable },
+            {typeof(char),DataType.Char },
+            {typeof(char?),DataType.CharNullable },
+            {typeof(DataTable),DataType.DataTable },
+            {typeof(DataSet),DataType.DataSet },
 
 
         };
