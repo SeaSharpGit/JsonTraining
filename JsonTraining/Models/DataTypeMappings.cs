@@ -29,6 +29,12 @@ namespace JsonTraining.Models
             {typeof(float?),DataType.SingleNullable },
             {typeof(decimal),DataType.Decimal },
             {typeof(decimal?),DataType.DecimalNullable },
+            {typeof(DateTime),DataType.DateTime },
+            {typeof(DateTime?),DataType.DateTimeNullable },
+            {typeof(DateTimeOffset),DataType.DateTimeOffset },
+            {typeof(DateTimeOffset?),DataType.DateTimeOffsetNullable },
+            {typeof(TimeSpan),DataType.TimeSpan },
+            {typeof(TimeSpan?),DataType.TimeSpanNullable },
 
 
         };

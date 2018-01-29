@@ -52,6 +52,29 @@ namespace JsonTraining.Helpers
                     sb.Append(obj);
                     break;
 
+                case DataType.DateTime:
+                case DataType.DateTimeNullable:
+                    sb.Append("\"");
+                    sb.Append(Convert.ToDateTime(obj).ToString("s"));
+                    sb.Append("\"");
+                    break;
+                case DataType.DateTimeOffset:
+                case DataType.DateTimeOffsetNullable:
+                    sb.Append("\"");
+                    if(obj is DateTimeOffset off)
+                    {
+                        sb.Append(off.ToString("s"));
+                    }
+                    
+                    sb.Append("\"");
+                    break;
+                case DataType.TimeSpan:
+                case DataType.TimeSpanNullable:
+                    sb.Append("\"");
+                    //sb.Append(Convert.ToDateTime(obj).ToString("s"));
+                    sb.Append("\"");
+                    break;
+
 
 
                 case DataType.Object:

@@ -11,7 +11,7 @@ namespace JsonTraining
         static void Main(string[] args)
         {
             #region 序列化
-            var model = new TestModel(InitType.Full);
+            var model = new TestModel(1);
             Console.WriteLine("*********************************");
             Console.WriteLine("JsonTraining测试结果");
             var a = JsonHelper.ConvertToJson(model);
@@ -28,7 +28,7 @@ namespace JsonTraining
 
             #region 反序列化
 
-            //var model = new TestModel(InitType.Full);
+            //var model = new TestModel(1);
             //var str = JsonHelper.ConvertToJson(model);
             //Console.WriteLine("字符串是：" + str);
             //var c = JsonHelper.ConvertToJsonObject<TestModel>(str);

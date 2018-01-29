@@ -8,9 +8,9 @@ namespace JsonTraining.Models
 {
     public class TestModel
     {
-        public TestModel(InitType type = InitType.Empty)
+        public TestModel(int parameter = 0)
         {
-            if (type == InitType.Full)
+            if (parameter == 1)
             {
                 ResetProperties();
             }
@@ -47,6 +47,15 @@ namespace JsonTraining.Models
             //DecimalNullable = 1.23M; 
             #endregion
 
+            #region 时间类型
+            DateTime = new DateTime(2000, 1, 1);
+            DateTimeNullable = new DateTime(2000, 1, 1);
+            DateTimeOffset = new DateTimeOffset(new DateTime(2000, 1, 1));
+            DateTimeOffset = new DateTimeOffset(new DateTime(2000, 1, 1));
+            DateTimeOffsetNullable = new DateTimeOffset(new DateTime(2000, 1, 1));
+            TimeSpan = new TimeSpan(1,1,1,1);
+            TimeSpanNullable = new TimeSpan(1,1,1,1);
+            #endregion
 
             //var dt = new DataTable();
             //dt.Columns.Add("Column0");
@@ -63,36 +72,48 @@ namespace JsonTraining.Models
         }
 
         #region 整形
-        public short Int16 { get; set; }
-        public short? Int16Nullable { get; set; }
-        public short? Int16NullableNull { get; set; }
-        public ushort UInt16 { get; set; }
-        public ushort? UInt16Nullable { get; set; }
-        public ushort? UInt16NullableNull { get; set; }
-        public int Int32 { get; set; }
-        public int? Int32Nullable { get; set; }
-        public int? Int32NullableNull { get; set; }
-        public uint UInt32 { get; set; }
-        public uint? UInt32Nullable { get; set; }
-        public uint? UInt32NullableNull { get; set; }
-        public long Int64 { get; set; }
-        public long? Int64Nullable { get; set; }
-        public long? Int64NullableNull { get; set; }
-        public ulong UInt64 { get; set; }
-        public ulong? UInt64Nullable { get; set; }
-        public ulong? UInt64NullableNull { get; set; }
+        //public short Int16 { get; set; }
+        //public short? Int16Nullable { get; set; }
+        //public short? Int16NullableNull { get; set; }
+        //public ushort UInt16 { get; set; }
+        //public ushort? UInt16Nullable { get; set; }
+        //public ushort? UInt16NullableNull { get; set; }
+        //public int Int32 { get; set; }
+        //public int? Int32Nullable { get; set; }
+        //public int? Int32NullableNull { get; set; }
+        //public uint UInt32 { get; set; }
+        //public uint? UInt32Nullable { get; set; }
+        //public uint? UInt32NullableNull { get; set; }
+        //public long Int64 { get; set; }
+        //public long? Int64Nullable { get; set; }
+        //public long? Int64NullableNull { get; set; }
+        //public ulong UInt64 { get; set; }
+        //public ulong? UInt64Nullable { get; set; }
+        //public ulong? UInt64NullableNull { get; set; }
         #endregion
 
         #region 浮点型
-        public double Double { get; set; }
-        public double? DoubleNullable { get; set; }
-        public double? DoubleNullableNull { get; set; }
-        public float Float { get; set; }
-        public float? FloatNullable { get; set; }
-        public float? FloatNullableNull { get; set; }
-        public decimal Decimal { get; set; }
-        public decimal? DecimalNullable { get; set; }
-        public decimal? DecimalNullableNull { get; set; }
+        //public double Double { get; set; }
+        //public double? DoubleNullable { get; set; }
+        //public double? DoubleNullableNull { get; set; }
+        //public float Float { get; set; }
+        //public float? FloatNullable { get; set; }
+        //public float? FloatNullableNull { get; set; }
+        //public decimal Decimal { get; set; }
+        //public decimal? DecimalNullable { get; set; }
+        //public decimal? DecimalNullableNull { get; set; }
+        #endregion
+
+        #region 时间类型
+        public DateTime DateTime { get; set; }
+        public DateTime? DateTimeNullable { get; set; }
+        public DateTime? DateTimeNullableNull { get; set; }
+        public DateTimeOffset DateTimeOffset { get; set; }
+        public DateTimeOffset? DateTimeOffsetNullable { get; set; }
+        public DateTimeOffset? DateTimeOffsetNullableNull { get; set; }
+        public TimeSpan TimeSpan { get; set; }
+        public TimeSpan? TimeSpanNullable { get; set; }
+        public TimeSpan? TimeSpanNullableNull { get; set; }
         #endregion
 
         #region 变量
@@ -108,8 +129,6 @@ namespace JsonTraining.Models
         //};
         #endregion
 
-        #region 基础值类型
-
 
         //public DateTime DateTimeTest { get; set; } = new DateTime(2000, 1, 1);
         //public bool BoolTest { get; set; } = true;
@@ -117,7 +136,6 @@ namespace JsonTraining.Models
         //public byte ByteTest { get; set; } = 5;
         //public EnumModel EnumTest { get; set; } = EnumModel.Second;
         //public StructModel StructTest { get; set; }
-        #endregion
 
         #region DataTable/DataSet
         //public DataTable DataTableTest { get; set; }
