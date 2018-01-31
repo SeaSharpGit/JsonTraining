@@ -32,7 +32,7 @@ namespace JsonTraining
             var str = JsonHelper.ConvertToJson(model2);
             Console.WriteLine("字符串是：" + str);
             var c = JsonHelper.ConvertToJsonObject<TestModel>(str);
-            //var d = JsonConvert.DeserializeObject<TestModel>(str);
+            var d = JsonConvert.DeserializeObject<TestModel>(str);
             #endregion
 
 

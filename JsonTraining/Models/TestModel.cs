@@ -66,7 +66,7 @@ namespace JsonTraining.Models
             //ArrayList = new ArrayList() { 1, new StructModel() { Name = "1", Age = 1 }, 3 };
             //Array = new int[] { 1, 2, 3 };
 
-            var dt = new DataTable();
+            var dt = new DataTable("MyDataTable");
             dt.Columns.Add("Column0");
             dt.Columns.Add("Column1");
             dt.Rows.Add(1, 2);

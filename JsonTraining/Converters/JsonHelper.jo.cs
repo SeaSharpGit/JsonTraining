@@ -220,15 +220,129 @@ namespace JsonTraining.Helpers
             //    return model;
             //}
         }
-        
+
         private static object JsonToDataSet(string str)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         private static object JsonToDataTable(string str)
         {
-            throw new NotImplementedException();
+            var dt = new DataTable();
+            var list = new List<string>();
+            str = str.Substring(1, str.Length - 2) + ",";
+            while (!String.IsNullOrEmpty(str))
+            {
+                var isString = false;//引号
+                var dCount = 0;//大括号{}
+                var isAdd = false;
+                for (int i = 0; i < str.Length; i++)
+                {
+                    if (isAdd)
+                    {
+                        break;
+                    }
+                    switch (str[i])
+                    {
+                        case '"':
+                            if (isString)
+                            {
+                                if (str[i - 1] != '\\')
+                                {
+                                    isString = false;
+                                }
+                            }
+                            else
+                            {
+                                isString = true;
+                            }
+                            break;
+                        case '{':
+                            if (!isString)
+                            {
+                                dCount++;
+                            }
+                            break;
+                        case '}':
+                            if (!isString)
+                            {
+                                dCount--;
+                            }
+                            break;
+                        case ',':
+                            if (!isString && dCount == 0)
+                            {
+                                var pValue = str.Substring(0, i);
+                                list.Add(pValue);
+                                str = str.Substring(i + 1);
+                                isAdd = true;
+                            }
+                            break;
+                    }
+                }
+            }
+
+            var first = true;
+            foreach (var item in list)
+            {
+                var lastStr = item.Substring(1, item.Length - 2) + ",";
+                var dic = new Dictionary<string, object>();
+                while (!String.IsNullOrEmpty(lastStr))
+                {
+                    var pIndex = lastStr.IndexOf("\"", 1);
+                    var pKey = lastStr.Substring(1, pIndex - 1);
+                    var value2 = lastStr.Substring(pIndex + 2);
+                    var isString = false;//引号
+                    var isAdd = false;
+                    for (int i = 0; i < value2.Length; i++)
+                    {
+                        if (isAdd)
+                        {
+                            break;
+                        }
+                        switch (value2[i])
+                        {
+                            case '"':
+                                if (isString)
+                                {
+                                    if (value2[i - 1] != '\\')
+                                    {
+                                        isString = false;
+                                    }
+                                }
+                                else
+                                {
+                                    isString = true;
+                                }
+                                break;
+                            case ',':
+                                if (!isString)
+                                {
+                                    var pValue = value2.Substring(0, i);
+                                    dic.Add(pKey, pValue);
+                                    lastStr = value2.Substring(i + 1);
+                                    Debug.WriteLine("key:" + pKey + "===value:" + pValue);
+                                    isAdd = true;
+                                }
+                                break;
+                        }
+                    }
+                }
+
+                //TODO:1.根据string分析类型，DataTable的列是有类型的,2.插入的值也要是有类型的
+                if (first)
+                {
+                    foreach (var kv in dic)
+                    {
+                        dt.Columns.Add(kv.Key,typeof(string));
+                    }
+                    first = false;
+                }
+
+                dt.Rows.Add(dic.Values);
+            }
+
+            return dt;
         }
 
 
@@ -380,26 +494,6 @@ namespace JsonTraining.Helpers
             }
 
             //TODO:创建对象
-            //var fields = type.GetFields();
-            //var properties = type.GetProperties();
-            //foreach (var item in list)
-            //{
-            //    var field = fields.Where(f => f.IsPublic && !f.IsStatic && f.Name == item.Key).FirstOrDefault();
-            //    if (field != null)
-            //    {
-            //        var value = CreateObject(field.FieldType, item.Value);
-            //        field.SetValue(model, value);
-            //    }
-            //    else
-            //    {
-            //        var property = properties.Where(p => p.Name == item.Key).FirstOrDefault();
-            //        if (property != null)
-            //        {
-            //            var value = CreateObject(property.PropertyType, item.Value);
-            //            property.SetValue(model, value);
-            //        }
-            //    }
-            //}
 
             return model;
         }
@@ -502,7 +596,7 @@ namespace JsonTraining.Helpers
             }
 
             return model;
-        } 
+        }
         #endregion
 
     }
