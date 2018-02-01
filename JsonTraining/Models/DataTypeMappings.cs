@@ -57,6 +57,10 @@ namespace JsonTraining.Models
             {
                 return dataType;
             }
+            else if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
+            {
+                return DataType.IEnumerable;
+            }
             else
             {
                 return DataType.Empty;

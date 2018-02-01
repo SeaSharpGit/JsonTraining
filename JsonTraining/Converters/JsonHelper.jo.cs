@@ -85,7 +85,8 @@ namespace JsonTraining.Helpers
                     return JsonToDataTable(str);
                 case DataType.DataSet:
                     return JsonToDataSet(str);
-
+                case DataType.IEnumerable:
+                    return JsonToIEnumerable(type, str);
 
 
 
@@ -101,12 +102,6 @@ namespace JsonTraining.Helpers
             //    var fullName = type.FullName;
             //    switch (fullName)
             //    {
-            //        case "System.Data.DataTable":
-            //            //DataTableToJson(obj as DataTable, ref sb);
-            //            break;
-            //        case "System.Data.DataSet":
-            //            //DataSetToJson(obj as DataSet, ref sb);
-            //            break;
             //        case "System.Action":
             //            //委托暂不支持
             //            break;
@@ -123,112 +118,102 @@ namespace JsonTraining.Helpers
             //            {
             //                break;
             //            }
-            //            else
-            //            {
-            //                if (str == "null")
-            //                {
-            //                    model = null;
-            //                }
-            //                else
-            //                {
-            //                    var list = new Dictionary<string, string>();
-            //                    str = str.Substring(1, str.Length - 2) + ",";
-            //                    while (!String.IsNullOrEmpty(str))
-            //                    {
-            //                        var pIndex = str.IndexOf("\"", 1);
-            //                        var pKey = str.Substring(1, pIndex - 1);
-            //                        var value = str.Substring(pIndex + 2);
-            //                        var isString = false;//引号
-            //                        var dCount = 0;//大括号{}
-            //                        var jCount = 0;//尖括号[]
-            //                        var isAdd = false;
-            //                        for (int i = 0; i < value.Length; i++)
-            //                        {
-            //                            if (isAdd)
-            //                            {
-            //                                break;
-            //                            }
-            //                            switch (value[i])
-            //                            {
-            //                                case '"':
-            //                                    if (isString)
-            //                                    {
-            //                                        if (value[i - 1] != '\\')
-            //                                        {
-            //                                            isString = false;
-            //                                        }
-            //                                    }
-            //                                    else
-            //                                    {
-            //                                        isString = true;
-            //                                    }
-            //                                    break;
-            //                                case '{':
-            //                                    if (!isString)
-            //                                    {
-            //                                        dCount++;
-            //                                    }
-            //                                    break;
-            //                                case '}':
-            //                                    if (!isString)
-            //                                    {
-            //                                        dCount--;
-            //                                    }
-            //                                    break;
-            //                                case '[':
-            //                                    if (!isString)
-            //                                    {
-            //                                        jCount++;
-            //                                    }
-            //                                    break;
-            //                                case ']':
-            //                                    if (!isString)
-            //                                    {
-            //                                        jCount--;
-            //                                    }
-            //                                    break;
-            //                                case ',':
-            //                                    if (!isString && dCount == 0 && jCount == 0)
-            //                                    {
-            //                                        var pValue = value.Substring(0, i);
-            //                                        list.Add(pKey, pValue);
-            //                                        str = value.Substring(i + 1);
-            //                                        Debug.WriteLine("key:" + pKey + "===value:" + pValue);
-            //                                        isAdd = true;
-            //                                    }
-            //                                    break;
-            //                            }
-            //                        }
-            //                    }
-
-            //                    var fields = type.GetFields();
-            //                    var propertys = type.GetProperties();
-
-            //                    foreach (var item in list)
-            //                    {
-            //                        var field = fields.Where(f => f.IsPublic && !f.IsStatic && f.Name == item.Key).FirstOrDefault();
-            //                        if (field != null)
-            //                        {
-            //                            var value = CreateObject(field.FieldType, item.Value);
-            //                            field.SetValue(model, value);
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //            break;
             //    }
             //    return model;
             //}
         }
 
-        private static object JsonToDataSet(string str)
+        private static object JsonToIEnumerable(Type type, string str)
         {
+            //var model = Activator.CreateInstance(type);
+            //return model;
             return null;
         }
 
-        private static object JsonToDataTable(string str)
+        #region JsonToDataSet
+        private static DataSet JsonToDataSet(string str)
+        {
+            var ds = new DataSet();
+            if (str.Length <= 2)
+            {
+                return ds;
+            }
+            str = str.Substring(1, str.Length - 2) + ",";
+            var dts = new Dictionary<string, string>();
+            while (!String.IsNullOrEmpty(str))
+            {
+                var pIndex = str.IndexOf("\"", 1);
+                var pKey = str.Substring(1, pIndex - 1);
+                var value = str.Substring(pIndex + 2);
+
+
+                var isString = false;//引号
+                var jCount = 0;//尖括号[]
+                var isAdd = false;
+                for (int i = 0; i < value.Length; i++)
+                {
+                    if (isAdd)
+                    {
+                        break;
+                    }
+                    switch (value[i])
+                    {
+                        case '"':
+                            if (isString)
+                            {
+                                if (str[i - 1] != '\\')
+                                {
+                                    isString = false;
+                                }
+                            }
+                            else
+                            {
+                                isString = true;
+                            }
+                            break;
+                        case '[':
+                            if (!isString)
+                            {
+                                jCount++;
+                            }
+                            break;
+                        case ']':
+                            if (!isString)
+                            {
+                                jCount--;
+                            }
+                            break;
+                        case ',':
+                            if (!isString && jCount == 0)
+                            {
+                                var pValue = value.Substring(0, i);
+                                dts.Add(pKey, pValue);
+                                str = value.Substring(i + 1);
+                                isAdd = true;
+                            }
+                            break;
+                    }
+                }
+            }
+            foreach (var kv in dts)
+            {
+                var dt = JsonToDataTable(kv.Value);
+                dt.TableName = kv.Key;
+                ds.Tables.Add(dt);
+            }
+            return ds;
+        }
+        #endregion
+
+        #region JsonToDataTable
+        private static DataTable JsonToDataTable(string str)
         {
             var dt = new DataTable();
+            if (str.Length <= 2)
+            {
+                return dt;
+            }
+
             var list = new List<string>();
             str = str.Substring(1, str.Length - 2) + ",";
             while (!String.IsNullOrEmpty(str))
@@ -321,7 +306,6 @@ namespace JsonTraining.Helpers
                                     var pValue = value2.Substring(0, i);
                                     dic.Add(pKey, pValue);
                                     lastStr = value2.Substring(i + 1);
-                                    Debug.WriteLine("key:" + pKey + "===value:" + pValue);
                                     isAdd = true;
                                 }
                                 break;
@@ -334,7 +318,7 @@ namespace JsonTraining.Helpers
                 {
                     foreach (var kv in dic)
                     {
-                        dt.Columns.Add(kv.Key,typeof(string));
+                        dt.Columns.Add(kv.Key, typeof(string));
                     }
                     first = false;
                 }
@@ -344,11 +328,10 @@ namespace JsonTraining.Helpers
 
             return dt;
         }
-
-
+        #endregion
 
         #region JsonToString
-        private static object JsonToString(string str)
+        private static string JsonToString(string str)
         {
             if (str.Length >= 2)
             {
@@ -360,7 +343,7 @@ namespace JsonTraining.Helpers
         #endregion
 
         #region JsonToChar
-        private static object JsonToChar(string str)
+        private static char JsonToChar(string str)
         {
             if (str.Length >= 2)
             {
@@ -375,7 +358,7 @@ namespace JsonTraining.Helpers
         #endregion
 
         #region JsonToTimeSpan
-        private static object JsonToTimeSpan(string str)
+        private static TimeSpan JsonToTimeSpan(string str)
         {
             if (str.Length >= 2)
             {
@@ -390,7 +373,7 @@ namespace JsonTraining.Helpers
         #endregion
 
         #region JsonToDateTimeOffset
-        private static object JsonToDateTimeOffset(string str)
+        private static DateTimeOffset JsonToDateTimeOffset(string str)
         {
             if (str.Length >= 2)
             {
@@ -405,7 +388,7 @@ namespace JsonTraining.Helpers
         #endregion
 
         #region JsonToDateTime
-        private static object JsonToDateTime(string str)
+        private static DateTime JsonToDateTime(string str)
         {
             if (str.Length >= 2)
             {
@@ -485,7 +468,6 @@ namespace JsonTraining.Helpers
                                 var pValue = value.Substring(0, i);
                                 list.Add(pKey, pValue);
                                 str = value.Substring(i + 1);
-                                Debug.WriteLine("key:" + pKey + "===value:" + pValue);
                                 isAdd = true;
                             }
                             break;
@@ -565,7 +547,6 @@ namespace JsonTraining.Helpers
                                 var pValue = value.Substring(0, i);
                                 list.Add(pKey, pValue);
                                 str = value.Substring(i + 1);
-                                Debug.WriteLine("key:" + pKey + "===value:" + pValue);
                                 isAdd = true;
                             }
                             break;

@@ -62,30 +62,30 @@ namespace JsonTraining.Models
             #endregion
 
             #region 集合类型
-            //List = new List<StructModel>() { new StructModel() { Name = "1", Age = 1 }, new StructModel() { Name = "2", Age = 2 } };
-            //ArrayList = new ArrayList() { 1, new StructModel() { Name = "1", Age = 1 }, 3 };
-            //Array = new int[] { 1, 2, 3 };
+            List = new List<StructModel>() { new StructModel() { Name = "1", Age = 1 }, new StructModel() { Name = "2", Age = 2 } };
+            ArrayList = new ArrayList() { 1, new StructModel() { Name = "1", Age = 1 }, 3 };
+            Array = new int[] { 1, 2, 3 };
 
-            var dt = new DataTable("MyDataTable");
-            dt.Columns.Add("Column0");
-            dt.Columns.Add("Column1");
-            dt.Rows.Add(1, 2);
-            dt.Rows.Add(3, 4);
-            DataTable = dt;
+            //var dt = new DataTable();
+            //dt.Columns.Add("Column0");
+            //dt.Columns.Add("Column1");
+            //dt.Rows.Add(1, 2);
+            //dt.Rows.Add(3, 4);
+            //DataTable = dt;
 
-            DataSet = new DataSet();
-            var dt2 = new DataTable("MyDataTable");
-            dt2.Columns.Add("Column0");
-            dt2.Columns.Add("Column1");
-            dt2.Rows.Add(1, 2);
-            dt2.Rows.Add(3, 4);
-            DataSet.Tables.Add(dt2);
-            var dt3 = new DataTable("MyDataTable2");
-            dt3.Columns.Add("Column0");
-            dt3.Columns.Add("Column1");
-            dt3.Rows.Add(5, 6);
-            dt3.Rows.Add(7, 8);
-            DataSet.Tables.Add(dt3);
+            //DataSet = new DataSet();
+            //var dt2 = new DataTable("MyDataTable");
+            //dt2.Columns.Add("Column0");
+            //dt2.Columns.Add("Column1");
+            //dt2.Rows.Add(1, 2);
+            //dt2.Rows.Add(3, 4);
+            //DataSet.Tables.Add(dt2);
+            //var dt3 = new DataTable("MyDataTable2");
+            //dt3.Columns.Add("Column0");
+            //dt3.Columns.Add("Column1");
+            //dt3.Rows.Add(5, 6);
+            //dt3.Rows.Add(7, 8);
+            //DataSet.Tables.Add(dt3);
             #endregion
 
             #region 其他类型
@@ -137,11 +137,11 @@ namespace JsonTraining.Models
         #endregion
 
         #region 集合类型类型
-        //public List<StructModel> List { get; set; }
-        //public ArrayList ArrayList { get; set; }
-        //public int[] Array { get; set; }
-        public DataTable DataTable { get; set; }
-        public DataSet DataSet { get; set; }
+        public List<StructModel> List { get; set; }
+        public ArrayList ArrayList { get; set; }
+        public int[] Array { get; set; }
+        //public DataTable DataTable { get; set; }
+        //public DataSet DataSet { get; set; }
         #endregion
 
         #region 其他类型

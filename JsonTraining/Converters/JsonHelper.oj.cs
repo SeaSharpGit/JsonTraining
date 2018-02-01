@@ -83,7 +83,9 @@ namespace JsonTraining.Helpers
                 case DataType.DataSet:
                     DataSetToJson(obj as DataSet, ref sb);
                     break;
-
+                case DataType.IEnumerable:
+                    IEnumerableToJson(obj as IEnumerable, ref sb);
+                    break;
 
 
 
@@ -109,18 +111,10 @@ namespace JsonTraining.Helpers
             //        {
             //            sb.Append((int)obj);
             //        }
-            //        else if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
-            //        {
-            //            IEnumerableToJson(obj as IEnumerable, ref sb);
-            //        }
             //        else if (type.Name == "Func`1")
             //        {
             //            //委托暂不支持
             //            break;
-            //        }
-            //        else
-            //        {
-            //            ObjectToJson(obj, ref sb);
             //        }
             //        break;
             //}
@@ -274,11 +268,6 @@ namespace JsonTraining.Helpers
             sb.Append("}");
         }
         #endregion
-
-
-
-
-
 
         #region IEnumerableToJson
         private static void IEnumerableToJson(IEnumerable items, ref StringBuilder sb)
