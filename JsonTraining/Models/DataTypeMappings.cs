@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -47,6 +48,12 @@ namespace JsonTraining.Models
             {typeof(char?),DataType.CharNullable },
             {typeof(DataTable),DataType.DataTable },
             {typeof(DataSet),DataType.DataSet },
+            {typeof(Guid),DataType.Guid },
+            {typeof(Guid?),DataType.GuidNullable },
+            {typeof(BigInteger),DataType.BigInteger },
+            {typeof(BigInteger?),DataType.BigIntegerNullable },
+            {typeof(Uri),DataType.Uri },
+            {typeof(Action),DataType.Action },
 
 
         };
@@ -56,6 +63,10 @@ namespace JsonTraining.Models
             if (_Mappings.TryGetValue(type, out DataType dataType))
             {
                 return dataType;
+            }
+            else if (type.IsEnum)
+            {
+                return DataType.Enum;
             }
             else if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
             {

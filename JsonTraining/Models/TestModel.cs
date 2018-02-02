@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace JsonTraining.Models
 {
@@ -61,10 +62,14 @@ namespace JsonTraining.Models
             //TimeSpanNullable = new TimeSpan(1, 1, 1, 1);
             #endregion
 
+            #region 变量
+            //Filed = 1;
+            #endregion
+
             #region 集合类型
-            List = new List<StructModel>() { new StructModel() { Name = "1", Age = 1 }, new StructModel() { Name = "2", Age = 2 } };
-            ArrayList = new ArrayList() { 1, new StructModel() { Name = "1", Age = 1 }, 3 };
-            Array = new int[] { 1, 2, 3 };
+            //List = new List<StructModel>() { new StructModel() { Name = "1", Age = 1 }, new StructModel() { Name = "2", Age = 2 } };
+            //ArrayList = new ArrayList() { 1, new StructModel() { Name = "1", Age = 1 }, 3 };
+            //Array = new int[] { 1, 2, 3 };
 
             //var dt = new DataTable();
             //dt.Columns.Add("Column0");
@@ -95,7 +100,15 @@ namespace JsonTraining.Models
             //BoolNullable = true;
             //Char = '1';
             //CharNullable = '1';
+            //Guid = new Guid();
+            //GuidNullable = new Guid();
+            //BigInteger = new BigInteger(1);
+            //BigIntegerNullable = new BigInteger(1);
+            //Uri = new Uri("https://www.baidu.com");
+            //Enum = EnumModel.Second;
             #endregion
+
+
 
         }
 
@@ -136,10 +149,15 @@ namespace JsonTraining.Models
         //public TimeSpan? TimeSpanNullable { get; set; }
         #endregion
 
-        #region 集合类型类型
-        public List<StructModel> List { get; set; }
-        public ArrayList ArrayList { get; set; }
-        public int[] Array { get; set; }
+        #region 变量
+        //public int Filed;
+        #endregion
+
+        #region 集合类型类型（！！！）
+        //public List<StructModel> List { get; set; }
+        //public ArrayList ArrayList { get; set; }
+        //public int[] Array { get; set; }
+
         //public DataTable DataTable { get; set; }
         //public DataSet DataSet { get; set; }
         #endregion
@@ -151,24 +169,24 @@ namespace JsonTraining.Models
         //public bool? BoolNullable { get; set; }
         //public char Char { get; set; }
         //public char? CharNullable { get; set; }
+        //public Guid Guid { get; set; }
+        //public Guid? GuidNullable { get; set; }
+        //public BigInteger BigInteger { get; set; }
+        //public BigInteger? BigIntegerNullable { get; set; }
+        //public Uri Uri { get; set; }
+        //public EnumModel Enum { get; set; } = EnumModel.Second;
         #endregion
 
-
-        //public EnumModel EnumTest { get; set; } = EnumModel.Second;
         //public StructModel StructTest { get; set; }
+        public Action<string> action = (s) =>
+        {
 
-        #region 变量
-        //public int FiledTest = 1;
-        //public StructModel StructFiledTest;
-        //public Action action = () =>
-        //{
-
-        //};
+        };
         //public Func<int> func = () =>
         //{
         //    return 1;
         //};
-        #endregion
+
 
     }
 

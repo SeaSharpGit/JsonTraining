@@ -56,23 +56,21 @@ namespace JsonTraining.Models
         BooleanNullable = 35,
         Char = 36,
         CharNullable = 37,
-
-
-
-        
-
         Guid = 38,
         GuidNullable = 39,
         BigInteger = 40,
         BigIntegerNullable = 41,
         Uri = 42,
-        DBNull = 43,
-        
-        Action=44,
-        Func=45,
+        Enum = 43,
 
         //待定
-        Struct = 46,
-        Enum = 47,
+        Struct = 44,
+        
+
+        //暂不支持
+        Action =45,
+        Func=46,
+
+        
     }
 }

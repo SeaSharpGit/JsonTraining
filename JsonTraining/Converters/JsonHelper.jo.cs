@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 
@@ -81,15 +82,22 @@ namespace JsonTraining.Helpers
                 case DataType.Char:
                 case DataType.CharNullable:
                     return JsonToChar(str);
+                case DataType.Guid:
+                case DataType.GuidNullable:
+                    return JsonToGuid(str);
+                case DataType.BigInteger:
+                case DataType.BigIntegerNullable:
+                    return BigInteger.Parse(str);
                 case DataType.DataTable:
                     return JsonToDataTable(str);
                 case DataType.DataSet:
                     return JsonToDataSet(str);
                 case DataType.IEnumerable:
                     return JsonToIEnumerable(type, str);
-
-
-
+                case DataType.Uri:
+                    return JsonToUri(str);
+                case DataType.Enum:
+                    return JsonToEnum(type, str);
                 case DataType.Object:
                     return JsonToObject(type, str);
                 case DataType.Empty:
@@ -98,8 +106,6 @@ namespace JsonTraining.Helpers
                     return null;
             }
 
-            //    object model = Activator.CreateInstance(type);
-            //    var fullName = type.FullName;
             //    switch (fullName)
             //    {
             //        case "System.Action":
@@ -110,10 +116,6 @@ namespace JsonTraining.Helpers
             //            {
             //                model = Enum.Parse(type, str);
             //            }
-            //            //else if (type.GetInterfaces().Count(i => i.Name == "IEnumerable") > 0)
-            //            //{
-            //            //    IEnumerableToJson(obj as IEnumerable, ref sb);
-            //            //}
             //            else if (type.Name == "Func`1")
             //            {
             //                break;
@@ -123,12 +125,39 @@ namespace JsonTraining.Helpers
             //}
         }
 
-        private static object JsonToIEnumerable(Type type, string str)
+        #region JsonToEnum
+        private static object JsonToEnum(Type type, string str)
         {
-            //var model = Activator.CreateInstance(type);
-            //return model;
-            return null;
+            return Enum.Parse(type, str);
+        } 
+        #endregion
+
+        #region JsonToUri
+        private static object JsonToUri(string str)
+        {
+            if (str.Length >= 2)
+            {
+                str = str.Substring(1, str.Length - 2);
+                return new Uri(str);
+            }
+            throw new Exception("string转Uri错误：" + str);
         }
+        #endregion
+
+        #region JsonToGuid
+        private static Guid JsonToGuid(string str)
+        {
+            if (str.Length >= 2)
+            {
+                str = str.Substring(1, str.Length - 2);
+                if (Guid.TryParse(str, out Guid guid))
+                {
+                    return guid;
+                }
+            }
+            throw new Exception("string转Guid错误：" + str);
+        }
+        #endregion
 
         #region JsonToDataSet
         private static DataSet JsonToDataSet(string str)
@@ -205,7 +234,177 @@ namespace JsonTraining.Helpers
         }
         #endregion
 
-        #region JsonToDataTable
+        #region JsonToOther
+        private static object JsonToOther(Type type, string str)
+        {
+            var model = Activator.CreateInstance(type);
+            var list = new Dictionary<string, string>();
+            str = str.Substring(1, str.Length - 2) + ",";
+            while (!String.IsNullOrEmpty(str))
+            {
+                var pIndex = str.IndexOf("\"", 1);
+                var pKey = str.Substring(1, pIndex - 1);
+                var value = str.Substring(pIndex + 2);
+                var isString = false;//引号
+                var dCount = 0;//大括号{}
+                var jCount = 0;//尖括号[]
+                var isAdd = false;
+                for (int i = 0; i < value.Length; i++)
+                {
+                    if (isAdd)
+                    {
+                        break;
+                    }
+                    switch (value[i])
+                    {
+                        case '"':
+                            if (isString)
+                            {
+                                if (value[i - 1] != '\\')
+                                {
+                                    isString = false;
+                                }
+                            }
+                            else
+                            {
+                                isString = true;
+                            }
+                            break;
+                        case '{':
+                            if (!isString)
+                            {
+                                dCount++;
+                            }
+                            break;
+                        case '}':
+                            if (!isString)
+                            {
+                                dCount--;
+                            }
+                            break;
+                        case '[':
+                            if (!isString)
+                            {
+                                jCount++;
+                            }
+                            break;
+                        case ']':
+                            if (!isString)
+                            {
+                                jCount--;
+                            }
+                            break;
+                        case ',':
+                            if (!isString && dCount == 0 && jCount == 0)
+                            {
+                                var pValue = value.Substring(0, i);
+                                list.Add(pKey, pValue);
+                                str = value.Substring(i + 1);
+                                isAdd = true;
+                            }
+                            break;
+                    }
+                }
+            }
+
+            var fields = type.GetFields();
+            var properties = type.GetProperties();
+
+            foreach (var item in list)
+            {
+                var field = fields.Where(f => f.IsPublic && !f.IsStatic && f.Name == item.Key).FirstOrDefault();
+                if (field != null)
+                {
+                    var value = CreateObject(field.FieldType, item.Value);
+                    field.SetValue(model, value);
+                }
+                else
+                {
+                    var property = properties.Where(p => p.Name == item.Key).FirstOrDefault();
+                    if (property != null)
+                    {
+                        var value = CreateObject(property.PropertyType, item.Value);
+                        property.SetValue(model, value);
+                    }
+                }
+            }
+
+            return model;
+        }
+        #endregion
+
+        #region JsonToString
+        private static string JsonToString(string str)
+        {
+            if (str.Length >= 2)
+            {
+                str = str.Substring(1, str.Length - 2).Replace("\\\"", "\"");
+                return str;
+            }
+            throw new Exception("json转string错误：" + str);
+        }
+        #endregion
+
+        #region JsonToChar
+        private static char JsonToChar(string str)
+        {
+            if (str.Length >= 2)
+            {
+                str = str.Substring(1, str.Length - 2);
+                if (char.TryParse(str, out char c))
+                {
+                    return c;
+                }
+            }
+            throw new Exception("string转char错误：" + str);
+        }
+        #endregion
+
+        #region JsonToTimeSpan
+        private static TimeSpan JsonToTimeSpan(string str)
+        {
+            if (str.Length >= 2)
+            {
+                str = str.Substring(1, str.Length - 2);
+                if (TimeSpan.TryParse(str, out TimeSpan ts))
+                {
+                    return ts;
+                }
+            }
+            throw new Exception("string转TimeSpan错误：" + str);
+        }
+        #endregion
+
+        #region JsonToDateTimeOffset
+        private static DateTimeOffset JsonToDateTimeOffset(string str)
+        {
+            if (str.Length >= 2)
+            {
+                str = str.Substring(1, str.Length - 2);
+                if (DateTimeOffset.TryParse(str, out DateTimeOffset off))
+                {
+                    return off;
+                }
+            }
+            throw new Exception("string转DateTimeOffset错误：" + str);
+        }
+        #endregion
+
+        #region JsonToDateTime
+        private static DateTime JsonToDateTime(string str)
+        {
+            if (str.Length >= 2)
+            {
+                str = str.Substring(1, str.Length - 2);
+                if (DateTime.TryParse(str, out DateTime time))
+                {
+                    return time;
+                }
+            }
+            throw new Exception("string转DateTime错误：" + str);
+        }
+        #endregion
+
         private static DataTable JsonToDataTable(string str)
         {
             var dt = new DataTable();
@@ -328,81 +527,7 @@ namespace JsonTraining.Helpers
 
             return dt;
         }
-        #endregion
 
-        #region JsonToString
-        private static string JsonToString(string str)
-        {
-            if (str.Length >= 2)
-            {
-                str = str.Substring(1, str.Length - 2).Replace("\\\"", "\"");
-                return str;
-            }
-            throw new Exception("json转string错误：" + str);
-        }
-        #endregion
-
-        #region JsonToChar
-        private static char JsonToChar(string str)
-        {
-            if (str.Length >= 2)
-            {
-                str = str.Substring(1, str.Length - 2);
-                if (char.TryParse(str, out char c))
-                {
-                    return c;
-                }
-            }
-            throw new Exception("string转char错误：" + str);
-        }
-        #endregion
-
-        #region JsonToTimeSpan
-        private static TimeSpan JsonToTimeSpan(string str)
-        {
-            if (str.Length >= 2)
-            {
-                str = str.Substring(1, str.Length - 2);
-                if (TimeSpan.TryParse(str, out TimeSpan ts))
-                {
-                    return ts;
-                }
-            }
-            throw new Exception("string转TimeSpan错误：" + str);
-        }
-        #endregion
-
-        #region JsonToDateTimeOffset
-        private static DateTimeOffset JsonToDateTimeOffset(string str)
-        {
-            if (str.Length >= 2)
-            {
-                str = str.Substring(1, str.Length - 2);
-                if (DateTimeOffset.TryParse(str, out DateTimeOffset off))
-                {
-                    return off;
-                }
-            }
-            throw new Exception("string转DateTimeOffset错误：" + str);
-        }
-        #endregion
-
-        #region JsonToDateTime
-        private static DateTime JsonToDateTime(string str)
-        {
-            if (str.Length >= 2)
-            {
-                str = str.Substring(1, str.Length - 2);
-                if (DateTime.TryParse(str, out DateTime time))
-                {
-                    return time;
-                }
-            }
-            throw new Exception("string转DateTime错误：" + str);
-        }
-        #endregion
-
-        #region JsonToObject
         private static object JsonToObject(Type type, string str)
         {
             var model = Activator.CreateInstance(type);
@@ -479,106 +604,16 @@ namespace JsonTraining.Helpers
 
             return model;
         }
-        #endregion
 
-        #region JsonToOther
-        private static object JsonToOther(Type type, string str)
+        private static object JsonToIEnumerable(Type type, string str)
         {
-            var model = Activator.CreateInstance(type);
-            var list = new Dictionary<string, string>();
-            str = str.Substring(1, str.Length - 2) + ",";
-            while (!String.IsNullOrEmpty(str))
-            {
-                var pIndex = str.IndexOf("\"", 1);
-                var pKey = str.Substring(1, pIndex - 1);
-                var value = str.Substring(pIndex + 2);
-                var isString = false;//引号
-                var dCount = 0;//大括号{}
-                var jCount = 0;//尖括号[]
-                var isAdd = false;
-                for (int i = 0; i < value.Length; i++)
-                {
-                    if (isAdd)
-                    {
-                        break;
-                    }
-                    switch (value[i])
-                    {
-                        case '"':
-                            if (isString)
-                            {
-                                if (value[i - 1] != '\\')
-                                {
-                                    isString = false;
-                                }
-                            }
-                            else
-                            {
-                                isString = true;
-                            }
-                            break;
-                        case '{':
-                            if (!isString)
-                            {
-                                dCount++;
-                            }
-                            break;
-                        case '}':
-                            if (!isString)
-                            {
-                                dCount--;
-                            }
-                            break;
-                        case '[':
-                            if (!isString)
-                            {
-                                jCount++;
-                            }
-                            break;
-                        case ']':
-                            if (!isString)
-                            {
-                                jCount--;
-                            }
-                            break;
-                        case ',':
-                            if (!isString && dCount == 0 && jCount == 0)
-                            {
-                                var pValue = value.Substring(0, i);
-                                list.Add(pKey, pValue);
-                                str = value.Substring(i + 1);
-                                isAdd = true;
-                            }
-                            break;
-                    }
-                }
-            }
-
-            var fields = type.GetFields();
-            var properties = type.GetProperties();
-
-            foreach (var item in list)
-            {
-                var field = fields.Where(f => f.IsPublic && !f.IsStatic && f.Name == item.Key).FirstOrDefault();
-                if (field != null)
-                {
-                    var value = CreateObject(field.FieldType, item.Value);
-                    field.SetValue(model, value);
-                }
-                else
-                {
-                    var property = properties.Where(p => p.Name == item.Key).FirstOrDefault();
-                    if (property != null)
-                    {
-                        var value = CreateObject(property.PropertyType, item.Value);
-                        property.SetValue(model, value);
-                    }
-                }
-            }
-
-            return model;
+            //TODO:迭代器的实例化
+            //var model = Activator.CreateInstance(type);
+            //return model;
+            return null;
         }
-        #endregion
+
+
 
     }
 }

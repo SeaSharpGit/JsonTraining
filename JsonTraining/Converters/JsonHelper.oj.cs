@@ -52,6 +52,8 @@ namespace JsonTraining.Helpers
                 case DataType.SingleNullable:
                 case DataType.Decimal:
                 case DataType.DecimalNullable:
+                case DataType.BigInteger:
+                case DataType.BigIntegerNullable:
                     sb.Append(obj);
                     break;
                 case DataType.Boolean:
@@ -77,6 +79,10 @@ namespace JsonTraining.Helpers
                 case DataType.String:
                     StringToJson(obj, ref sb);
                     break;
+                case DataType.Guid:
+                case DataType.GuidNullable:
+                    GuidToJson(obj, ref sb);
+                    break;
                 case DataType.DataTable:
                     DataTableToJson(obj as DataTable, ref sb);
                     break;
@@ -86,9 +92,15 @@ namespace JsonTraining.Helpers
                 case DataType.IEnumerable:
                     IEnumerableToJson(obj as IEnumerable, ref sb);
                     break;
-
-
-
+                case DataType.Uri:
+                    UriToJson(obj as Uri, ref sb);
+                    break;
+                case DataType.Action:
+                    //暂不支持委托
+                    break;
+                case DataType.Enum:
+                    EnumToJson(obj, ref sb);
+                    break;
                 case DataType.Object:
                     ObjectToJson(obj, ref sb);
                     break;
@@ -119,6 +131,31 @@ namespace JsonTraining.Helpers
             //        break;
             //}
         }
+
+        #region EnumToJson
+        private static void EnumToJson(object obj, ref StringBuilder sb)
+        {
+            sb.Append((int)obj);
+        } 
+        #endregion
+
+        #region UriToJson
+        private static void UriToJson(Uri uri, ref StringBuilder sb)
+        {
+            sb.Append("\"");
+            sb.Append(uri.OriginalString);
+            sb.Append("\"");
+        }
+        #endregion
+
+        #region GuidToJson
+        private static void GuidToJson(object obj, ref StringBuilder sb)
+        {
+            sb.Append("\"");
+            sb.Append(obj);
+            sb.Append("\"");
+        }
+        #endregion
 
         #region BoolToJson
         private static void BoolToJson(object obj, ref StringBuilder sb)
