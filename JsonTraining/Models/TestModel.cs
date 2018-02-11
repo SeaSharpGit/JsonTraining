@@ -95,7 +95,7 @@ namespace JsonTraining.Models
 
             #region 其他类型
             //String = "字符串{[\"";
-            //Object = new { Name = "对象" };
+            Object = new { Name = "对象", Age = 20 };
             //Bool = true;
             //BoolNullable = true;
             //Char = '1';
@@ -106,9 +106,8 @@ namespace JsonTraining.Models
             //BigIntegerNullable = new BigInteger(1);
             //Uri = new Uri("https://www.baidu.com");
             //Enum = EnumModel.Second;
+            //Struct = new StructModel() { Age = 1, Name = "2" };
             #endregion
-
-
 
         }
 
@@ -164,7 +163,7 @@ namespace JsonTraining.Models
 
         #region 其他类型
         //public string String { get; set; }
-        //public object Object { get; set; }
+        public object Object { get; set; }
         //public bool Bool { get; set; }
         //public bool? BoolNullable { get; set; }
         //public char Char { get; set; }
@@ -175,25 +174,9 @@ namespace JsonTraining.Models
         //public BigInteger? BigIntegerNullable { get; set; }
         //public Uri Uri { get; set; }
         //public EnumModel Enum { get; set; } = EnumModel.Second;
+        //public StructModel Struct { get; set; }
         #endregion
 
-        //public StructModel StructTest { get; set; }
-        public Action<string> action = (s) =>
-        {
-
-        };
-        //public Func<int> func = () =>
-        //{
-        //    return 1;
-        //};
-
-
-    }
-
-    public struct StructModel
-    {
-        public string Name { get; set; }
-        public int Age { get; set; }
     }
 
     public enum EnumModel

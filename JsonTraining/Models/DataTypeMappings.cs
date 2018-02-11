@@ -53,7 +53,6 @@ namespace JsonTraining.Models
             {typeof(BigInteger),DataType.BigInteger },
             {typeof(BigInteger?),DataType.BigIntegerNullable },
             {typeof(Uri),DataType.Uri },
-            {typeof(Action),DataType.Action },
 
 
         };

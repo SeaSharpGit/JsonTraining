@@ -62,15 +62,5 @@ namespace JsonTraining.Models
         BigIntegerNullable = 41,
         Uri = 42,
         Enum = 43,
-
-        //待定
-        Struct = 44,
-        
-
-        //暂不支持
-        Action =45,
-        Func=46,
-
-        
     }
 }

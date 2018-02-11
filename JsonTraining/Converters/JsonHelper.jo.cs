@@ -105,31 +105,13 @@ namespace JsonTraining.Helpers
                 default:
                     return null;
             }
-
-            //    switch (fullName)
-            //    {
-            //        case "System.Action":
-            //            //委托暂不支持
-            //            break;
-            //        default:
-            //            if (type.IsEnum)
-            //            {
-            //                model = Enum.Parse(type, str);
-            //            }
-            //            else if (type.Name == "Func`1")
-            //            {
-            //                break;
-            //            }
-            //    }
-            //    return model;
-            //}
         }
 
         #region JsonToEnum
         private static object JsonToEnum(Type type, string str)
         {
             return Enum.Parse(type, str);
-        } 
+        }
         #endregion
 
         #region JsonToUri
@@ -238,6 +220,11 @@ namespace JsonTraining.Helpers
         private static object JsonToOther(Type type, string str)
         {
             var model = Activator.CreateInstance(type);
+            if (str.Length <= 2)
+            {
+                return model;
+            }
+
             var list = new Dictionary<string, string>();
             str = str.Substring(1, str.Length - 2) + ",";
             while (!String.IsNullOrEmpty(str))
@@ -405,6 +392,99 @@ namespace JsonTraining.Helpers
         }
         #endregion
 
+        #region JsonToObject
+        private static object JsonToObject(Type type, string str)
+        {
+            var list = new Dictionary<string, string>();
+            str = str.Substring(1, str.Length - 2) + ",";
+            while (!String.IsNullOrEmpty(str))
+            {
+                var pIndex = str.IndexOf("\"", 1);
+                var pKey = str.Substring(1, pIndex - 1);
+                var value = str.Substring(pIndex + 2);
+                var isString = false;//引号
+                var dCount = 0;//大括号{}
+                var jCount = 0;//尖括号[]
+                var isAdd = false;
+                for (int i = 0; i < value.Length; i++)
+                {
+                    if (isAdd)
+                    {
+                        break;
+                    }
+                    switch (value[i])
+                    {
+                        case '"':
+                            if (isString)
+                            {
+                                if (value[i - 1] != '\\')
+                                {
+                                    isString = false;
+                                }
+                            }
+                            else
+                            {
+                                isString = true;
+                            }
+                            break;
+                        case '{':
+                            if (!isString)
+                            {
+                                dCount++;
+                            }
+                            break;
+                        case '}':
+                            if (!isString)
+                            {
+                                dCount--;
+                            }
+                            break;
+                        case '[':
+                            if (!isString)
+                            {
+                                jCount++;
+                            }
+                            break;
+                        case ']':
+                            if (!isString)
+                            {
+                                jCount--;
+                            }
+                            break;
+                        case ',':
+                            if (!isString && dCount == 0 && jCount == 0)
+                            {
+                                var pValue = value.Substring(0, i);
+                                list.Add(pKey, pValue);
+                                str = value.Substring(i + 1);
+                                isAdd = true;
+                            }
+                            break;
+                    }
+                }
+            }
+            var sb = new StringBuilder();
+            sb.Append("return new {");
+            var start = 1;
+            foreach (var item in list)
+            {
+
+                sb.Append(item.Key);
+                sb.Append("=");
+                sb.Append(item.Value);
+                if (start != list.Count)
+                {
+                    sb.Append(",");
+                    sb.Append(Environment.NewLine);
+                }
+                start++;
+            }
+            sb.Append("};");
+            var code = sb.ToString();
+            return CodeHelper.CodeToObject(code);
+        }
+        #endregion
+
         private static DataTable JsonToDataTable(string str)
         {
             var dt = new DataTable();
@@ -526,83 +606,6 @@ namespace JsonTraining.Helpers
             }
 
             return dt;
-        }
-
-        private static object JsonToObject(Type type, string str)
-        {
-            var model = Activator.CreateInstance(type);
-            var list = new Dictionary<string, string>();
-            str = str.Substring(1, str.Length - 2) + ",";
-            while (!String.IsNullOrEmpty(str))
-            {
-                var pIndex = str.IndexOf("\"", 1);
-                var pKey = str.Substring(1, pIndex - 1);
-                var value = str.Substring(pIndex + 2);
-                var isString = false;//引号
-                var dCount = 0;//大括号{}
-                var jCount = 0;//尖括号[]
-                var isAdd = false;
-                for (int i = 0; i < value.Length; i++)
-                {
-                    if (isAdd)
-                    {
-                        break;
-                    }
-                    switch (value[i])
-                    {
-                        case '"':
-                            if (isString)
-                            {
-                                if (value[i - 1] != '\\')
-                                {
-                                    isString = false;
-                                }
-                            }
-                            else
-                            {
-                                isString = true;
-                            }
-                            break;
-                        case '{':
-                            if (!isString)
-                            {
-                                dCount++;
-                            }
-                            break;
-                        case '}':
-                            if (!isString)
-                            {
-                                dCount--;
-                            }
-                            break;
-                        case '[':
-                            if (!isString)
-                            {
-                                jCount++;
-                            }
-                            break;
-                        case ']':
-                            if (!isString)
-                            {
-                                jCount--;
-                            }
-                            break;
-                        case ',':
-                            if (!isString && dCount == 0 && jCount == 0)
-                            {
-                                var pValue = value.Substring(0, i);
-                                list.Add(pKey, pValue);
-                                str = value.Substring(i + 1);
-                                isAdd = true;
-                            }
-                            break;
-                    }
-                }
-            }
-
-            //TODO:创建对象
-
-            return model;
         }
 
         private static object JsonToIEnumerable(Type type, string str)

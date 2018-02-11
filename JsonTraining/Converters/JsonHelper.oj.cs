@@ -95,41 +95,14 @@ namespace JsonTraining.Helpers
                 case DataType.Uri:
                     UriToJson(obj as Uri, ref sb);
                     break;
-                case DataType.Action:
-                    //暂不支持委托
-                    break;
                 case DataType.Enum:
                     EnumToJson(obj, ref sb);
                     break;
                 case DataType.Object:
-                    ObjectToJson(obj, ref sb);
-                    break;
                 case DataType.Empty:
                     ObjectToJson(obj, ref sb);
                     break;
             }
-
-
-
-
-            //var fullName = type.FullName;
-            //switch (fullName)
-            //{
-            //    case "System.Action":
-            //        //委托暂不支持
-            //        break;
-            //    default:
-            //        if (type.IsEnum)
-            //        {
-            //            sb.Append((int)obj);
-            //        }
-            //        else if (type.Name == "Func`1")
-            //        {
-            //            //委托暂不支持
-            //            break;
-            //        }
-            //        break;
-            //}
         }
 
         #region EnumToJson
