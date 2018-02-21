@@ -67,15 +67,15 @@ namespace JsonTraining.Models
             #endregion
 
             #region 集合类型
-            //List = new List<StructModel>() { new StructModel() { Name = "1", Age = 1 }, new StructModel() { Name = "2", Age = 2 } };
-            //ArrayList = new ArrayList() { 1, new StructModel() { Name = "1", Age = 1 }, 3 };
-            //Array = new int[] { 1, 2, 3 };
+            List = new List<string>() { "1", "2", "3" };
+            ArrayList = new ArrayList() { 1, "2", true };
+            Array = new string[] { "1", "2", "3" };
 
             //var dt = new DataTable();
-            //dt.Columns.Add("Column0");
+            //dt.Columns.Add("Column0",typeof(bool));
             //dt.Columns.Add("Column1");
-            //dt.Rows.Add(1, 2);
-            //dt.Rows.Add(3, 4);
+            //dt.Rows.Add(true, 2);
+            //dt.Rows.Add(false, 4);
             //DataTable = dt;
 
             //DataSet = new DataSet();
@@ -95,7 +95,7 @@ namespace JsonTraining.Models
 
             #region 其他类型
             //String = "字符串{[\"";
-            Object = new { Name = "对象", Age = 20 };
+            //Object = new { Name = "对象", Age = 20 };
             //Bool = true;
             //BoolNullable = true;
             //Char = '1';
@@ -153,9 +153,9 @@ namespace JsonTraining.Models
         #endregion
 
         #region 集合类型类型（！！！）
-        //public List<StructModel> List { get; set; }
-        //public ArrayList ArrayList { get; set; }
-        //public int[] Array { get; set; }
+        public List<string> List { get; set; }
+        public ArrayList ArrayList { get; set; }
+        public string[] Array { get; set; }
 
         //public DataTable DataTable { get; set; }
         //public DataSet DataSet { get; set; }
@@ -163,7 +163,7 @@ namespace JsonTraining.Models
 
         #region 其他类型
         //public string String { get; set; }
-        public object Object { get; set; }
+        //public object Object { get; set; }
         //public bool Bool { get; set; }
         //public bool? BoolNullable { get; set; }
         //public char Char { get; set; }
