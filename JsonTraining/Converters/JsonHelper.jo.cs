@@ -733,17 +733,35 @@ namespace JsonTraining.Helpers
             }
             else if (type.IsGenericType)
             {
-                dynamic model = Activator.CreateInstance(type);
+                var model = Activator.CreateInstance(type);
                 var typeT = type.GenericTypeArguments[0];
                 var typeIE = type.GetGenericTypeDefinition();
-
                 if (typeIE == typeof(List<>))
                 {
+                    Assembly assembly = Assembly.Load("mscorlib.dll");
+                    Type typeClass = assembly.GetType("System.Collections.IList");
+                    foreach (var item in list)
+                    {
+                        var value = CreateObject(typeT, item);
+                        var params_type = new Type[1] { typeof(object) };
+                        var params_obj = new Object[1] { value };
+                        typeClass.GetMethod("Add", params_type).Invoke(model, params_obj);
+                    }
+                    return model;
 
                 }
-                else if (typeIE == typeof(IDictionary<,>))
+                else if (typeIE == typeof(Dictionary<,>))
                 {
-
+                    Assembly assembly = Assembly.Load("mscorlib.dll");
+                    Type typeClass = assembly.GetType("System.Collections.IDictionary");
+                    foreach (var item in list)
+                    {
+                        var value = CreateObject(typeT, item);
+                        var params_type = new Type[2] { typeof(object), typeof(object) };
+                        var params_obj = new Object[1] { value };
+                        typeClass.GetMethod("IDictionary", params_type).Invoke(model, params_obj);
+                    }
+                    return model;
                 }
             }
             else if (type == typeof(ArrayList))

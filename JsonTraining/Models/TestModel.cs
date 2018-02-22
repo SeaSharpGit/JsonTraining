@@ -70,6 +70,7 @@ namespace JsonTraining.Models
             List = new List<string>() { "1", "2", "3" };
             ArrayList = new ArrayList() { 1, "2", true };
             Array = new string[] { "1", "2", "3" };
+            Dictionary = new Dictionary<string, string>() { { "1", "2" }, { "3", "4" } };
 
             //var dt = new DataTable();
             //dt.Columns.Add("Column0",typeof(bool));
@@ -155,6 +156,7 @@ namespace JsonTraining.Models
         #region 集合类型类型（！！！）
         public List<string> List { get; set; }
         public ArrayList ArrayList { get; set; }
+        public Dictionary<string, string> Dictionary { get; set; }
         public string[] Array { get; set; }
 
         //public DataTable DataTable { get; set; }
