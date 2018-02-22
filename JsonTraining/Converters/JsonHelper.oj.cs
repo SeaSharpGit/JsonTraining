@@ -90,7 +90,7 @@ namespace JsonTraining.Helpers
                     DataSetToJson(obj as DataSet, ref sb);
                     break;
                 case DataType.IEnumerable:
-                    IEnumerableToJson(obj as IEnumerable, ref sb);
+                    IEnumerableToJson(obj, ref sb);
                     break;
                 case DataType.Uri:
                     UriToJson(obj as Uri, ref sb);
@@ -109,7 +109,7 @@ namespace JsonTraining.Helpers
         private static void EnumToJson(object obj, ref StringBuilder sb)
         {
             sb.Append((int)obj);
-        } 
+        }
         #endregion
 
         #region UriToJson
@@ -280,21 +280,31 @@ namespace JsonTraining.Helpers
         #endregion
 
         #region IEnumerableToJson
-        private static void IEnumerableToJson(IEnumerable items, ref StringBuilder sb)
+        private static void IEnumerableToJson(object items, ref StringBuilder sb)
         {
-            sb.Append("[");
-            var flag = false;
-            foreach (var i in items)
+            var type = items.GetType();
+            //判断Dictionary
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
-                AppendString(i, ref sb);
-                sb.Append(",");
-                flag = true;
+                sb.Append("{");
+                sb.Append("}");
             }
-            if (flag)
+            else
             {
-                sb.Remove(sb.Length - 1, 1);
+                sb.Append("[");
+                var flag = false;
+                foreach (var i in items as IEnumerable)
+                {
+                    AppendString(i, ref sb);
+                    sb.Append(",");
+                    flag = true;
+                }
+                if (flag)
+                {
+                    sb.Remove(sb.Length - 1, 1);
+                }
+                sb.Append("]");
             }
-            sb.Append("]");
         }
         #endregion
     }

@@ -644,9 +644,17 @@ namespace JsonTraining.Helpers
 
         private static object JsonToIEnumerable(Type type, string json)
         {
-            if (json == null || !(json.StartsWith("[") && json.EndsWith("]")))
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+            {
+                return JsonToDictionary(type, json);
+            }
+            if (string.IsNullOrEmpty(json) || !json.StartsWith("[") || !json.EndsWith("]"))
             {
                 return null;
+            }
+            if (json == "[]")
+            {
+                return type.IsArray ? Array.CreateInstance(type.GetElementType(), 0) : Activator.CreateInstance(type);
             }
 
             var list = new List<string>();
@@ -713,65 +721,158 @@ namespace JsonTraining.Helpers
                     }
                 }
             }
-
-            foreach (var kv in list)
-            {
-                Debug.WriteLine(kv);
-            }
-
-
             if (type.IsArray)
             {
-                var t = type.GetElementType();
-                var model = Array.CreateInstance(t, list.Count);
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var obj = CreateObject(t, list[i]);
-                    model.SetValue(obj, i);
-                }
-                return model;
+                return JsonToArray(type, list);
             }
-            else if (type.IsGenericType)
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
-                var model = Activator.CreateInstance(type);
-                var typeT = type.GenericTypeArguments[0];
-                var typeIE = type.GetGenericTypeDefinition();
-                if (typeIE == typeof(List<>))
-                {
-                    Assembly assembly = Assembly.Load("mscorlib.dll");
-                    Type typeClass = assembly.GetType("System.Collections.IList");
-                    foreach (var item in list)
-                    {
-                        var value = CreateObject(typeT, item);
-                        var params_type = new Type[1] { typeof(object) };
-                        var params_obj = new Object[1] { value };
-                        typeClass.GetMethod("Add", params_type).Invoke(model, params_obj);
-                    }
-                    return model;
-
-                }
-                else if (typeIE == typeof(Dictionary<,>))
-                {
-                    Assembly assembly = Assembly.Load("mscorlib.dll");
-                    Type typeClass = assembly.GetType("System.Collections.IDictionary");
-                    foreach (var item in list)
-                    {
-                        var value = CreateObject(typeT, item);
-                        var params_type = new Type[2] { typeof(object), typeof(object) };
-                        var params_obj = new Object[1] { value };
-                        typeClass.GetMethod("IDictionary", params_type).Invoke(model, params_obj);
-                    }
-                    return model;
-                }
+                return JsonToList(type, list);
             }
             else if (type == typeof(ArrayList))
             {
-
+                return JsonToArrayList(type, list);
             }
 
             return null;
         }
 
+        #region JsonToArraryList
+        private static object JsonToArrayList(Type type, List<string> list)
+        {
+            var model = new ArrayList();
+            //foreach (var item in list)
+            //{
+            //    if (item.StartsWith("\"") && item.EndsWith("\""))
+            //    {
+
+            //    }
+            //    else if (item.ToLower() == "true" || item.ToLower() == "false")
+            //    {
+            //        dt.Columns.Add(kv.Key, typeof(bool));
+            //        row[kv.Key] = kv.Value;
+            //    }
+            //    else
+            //    {
+            //        dt.Columns.Add(kv.Key, typeof(int));
+            //        row[kv.Key] = kv.Value;
+            //    }
+            //    var value=CreateObject(true)
+            //}
+            return model;
+        }
+        #endregion
+
+        #region JsonToDictionary
+        private static object JsonToDictionary(Type type, string json)
+        {
+            return null;
+            //var model = Activator.CreateInstance(type);
+            //var typeT = type.GenericTypeArguments[0];
+            //Assembly assembly = Assembly.Load("mscorlib.dll");
+            //Type typeClass = assembly.GetType("System.Collections.IDictionary");
+            //foreach (var item in list)
+            //{
+            //    var json = item.Substring(7, item.Length - 8);
+            //    var isString = false;//引号
+            //    var dCount = 0;//大括号{}
+            //    var jCount = 0;//尖括号[]
+            //    for (int i = 0; i < item.Length; i++)
+            //    {
+            //        switch (item[i])
+            //        {
+            //            case '"':
+            //                if (isString)
+            //                {
+            //                    if (i == 0 || item[i - 1] != '\\')
+            //                    {
+            //                        isString = false;
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    isString = true;
+            //                }
+            //                break;
+            //            case '{':
+            //                if (!isString)
+            //                {
+            //                    dCount++;
+            //                }
+            //                break;
+            //            case '}':
+            //                if (!isString)
+            //                {
+            //                    dCount--;
+            //                }
+            //                break;
+            //            case '[':
+            //                if (!isString)
+            //                {
+            //                    jCount++;
+            //                }
+            //                break;
+            //            case ']':
+            //                if (!isString)
+            //                {
+            //                    jCount--;
+            //                }
+            //                break;
+            //            case ',':
+            //                if (!isString && dCount == 0 && jCount == 0)
+            //                {
+            //                    //list.Add(json.Substring(0, i));
+            //                    //json = json.Substring(i + 1);
+            //                }
+            //                break;
+            //        }
+            //    }
+
+            //    var value = CreateObject(typeT, item);
+            //    var params_type = new Type[2] { typeof(object), typeof(object) };
+            //    var params_obj = new Object[1] { value };
+            //    typeClass.GetMethod("IDictionary", params_type).Invoke(model, params_obj);
+            //}
+            //return model;
+        }
+        #endregion
+
+        #region JsonToArray
+        private static object JsonToArray(Type type, List<string> list)
+        {
+            var typeT = type.GetElementType();
+            var model = Array.CreateInstance(typeT, list.Count);
+            for (int i = 0; i < list.Count; i++)
+            {
+                var item = list[i];
+                if (item.StartsWith("\"") && item.EndsWith("\""))
+                {
+                    item = item.Substring(1, item.Length - 2);
+                }
+                var obj = CreateObject(type, item);
+                model.SetValue(obj, i);
+            }
+            return model;
+        }
+        #endregion
+
+        #region JsonToList
+        private static object JsonToList(Type type, List<string> list)
+        {
+            var model = Activator.CreateInstance(type);
+            var typeT = type.GenericTypeArguments[0];
+            Assembly assembly = Assembly.Load("mscorlib.dll");
+            Type typeClass = assembly.GetType("System.Collections.IList");
+            foreach (var item in list)
+            {
+                var value = CreateObject(typeT, item);
+                var types = new Type[1] { typeof(object) };
+                var objs = new Object[1] { value };
+                typeClass.GetMethod("Add", types).Invoke(model, objs);
+            }
+            return model;
+        }
+        #endregion
 
 
     }

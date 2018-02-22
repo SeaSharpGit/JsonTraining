@@ -52,9 +52,7 @@ namespace JsonTraining.Models
             {typeof(Guid?),DataType.GuidNullable },
             {typeof(BigInteger),DataType.BigInteger },
             {typeof(BigInteger?),DataType.BigIntegerNullable },
-            {typeof(Uri),DataType.Uri },
-
-
+            {typeof(Uri),DataType.Uri }
         };
 
         public static DataType GetDataType(Type type)

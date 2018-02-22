@@ -67,10 +67,13 @@ namespace JsonTraining.Models
             #endregion
 
             #region 集合类型
-            List = new List<string>() { "1", "2", "3" };
+            //List = new List<int>() { 1, 2, 3 };
+            //List2 = new List<string>() { "1", "2", "3" };
+            //Array = new int[] { 1, 2, 3 };
+            //Array2 = new string[] { "1", "2", "3" };
             ArrayList = new ArrayList() { 1, "2", true };
-            Array = new string[] { "1", "2", "3" };
-            Dictionary = new Dictionary<string, string>() { { "1", "2" }, { "3", "4" } };
+            //Dictionary = new Dictionary<string, string>() { { "1", "2" }, { "3", "4" } };
+            //Dictionary = new Dictionary<string, string>();
 
             //var dt = new DataTable();
             //dt.Columns.Add("Column0",typeof(bool));
@@ -153,11 +156,13 @@ namespace JsonTraining.Models
         //public int Filed;
         #endregion
 
-        #region 集合类型类型（！！！）
-        public List<string> List { get; set; }
+        #region 集合类型类型
+        //public List<int> List { get; set; }
+        //public List<string> List2 { get; set; }
+        //public int[] Array { get; set; }
+        //public string[] Array2 { get; set; }
         public ArrayList ArrayList { get; set; }
-        public Dictionary<string, string> Dictionary { get; set; }
-        public string[] Array { get; set; }
+        //public Dictionary<string, string> Dictionary { get; set; }
 
         //public DataTable DataTable { get; set; }
         //public DataSet DataSet { get; set; }
