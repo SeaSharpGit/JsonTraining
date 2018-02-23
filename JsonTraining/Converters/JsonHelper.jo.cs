@@ -740,34 +740,30 @@ namespace JsonTraining.Helpers
         #region JsonToArraryList
         private static object JsonToArrayList(Type type, List<string> list)
         {
-            var model = new ArrayList();
-            //foreach (var item in list)
-            //{
-            //    if (item.StartsWith("\"") && item.EndsWith("\""))
-            //    {
-
-            //    }
-            //    else if (item.ToLower() == "true" || item.ToLower() == "false")
-            //    {
-            //        dt.Columns.Add(kv.Key, typeof(bool));
-            //        row[kv.Key] = kv.Value;
-            //    }
-            //    else
-            //    {
-            //        dt.Columns.Add(kv.Key, typeof(int));
-            //        row[kv.Key] = kv.Value;
-            //    }
-            //    var value=CreateObject(true)
-            //}
-            return model;
+            var al = new ArrayList();
+            foreach (var item in list)
+            {
+                if (item.StartsWith("\"") && item.EndsWith("\""))
+                {
+                    al.Add(item.Substring(1, item.Length - 2));
+                }
+                else if (bool.TryParse(item, out bool b))
+                {
+                    al.Add(b);
+                }
+                else if (int.TryParse(item, out int i))
+                {
+                    al.Add(i);
+                }
+            }
+            return al;
         }
         #endregion
 
         #region JsonToDictionary
         private static object JsonToDictionary(Type type, string json)
         {
-            return null;
-            //var model = Activator.CreateInstance(type);
+            var model = Activator.CreateInstance(type);
             //var typeT = type.GenericTypeArguments[0];
             //Assembly assembly = Assembly.Load("mscorlib.dll");
             //Type typeClass = assembly.GetType("System.Collections.IDictionary");
@@ -833,7 +829,7 @@ namespace JsonTraining.Helpers
             //    var params_obj = new Object[1] { value };
             //    typeClass.GetMethod("IDictionary", params_type).Invoke(model, params_obj);
             //}
-            //return model;
+            return model;
         }
         #endregion
 

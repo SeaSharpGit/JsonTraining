@@ -286,7 +286,14 @@ namespace JsonTraining.Helpers
             //判断Dictionary
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
+                dynamic dic = items;
                 sb.Append("{");
+                foreach (var item in dic)
+                {
+                    sb.Append("\"");
+                    AppendString(item.Key)
+                    sb.Append("\"");
+                }
                 sb.Append("}");
             }
             else

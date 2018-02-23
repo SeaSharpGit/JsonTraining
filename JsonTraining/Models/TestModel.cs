@@ -71,9 +71,8 @@ namespace JsonTraining.Models
             //List2 = new List<string>() { "1", "2", "3" };
             //Array = new int[] { 1, 2, 3 };
             //Array2 = new string[] { "1", "2", "3" };
-            ArrayList = new ArrayList() { 1, "2", true };
-            //Dictionary = new Dictionary<string, string>() { { "1", "2" }, { "3", "4" } };
-            //Dictionary = new Dictionary<string, string>();
+            //ArrayList = new ArrayList() { 1, "2", true };
+            Dictionary = new Dictionary<int, string>() { { 1, "2" }, { 3, "4" } };
 
             //var dt = new DataTable();
             //dt.Columns.Add("Column0",typeof(bool));
@@ -161,8 +160,8 @@ namespace JsonTraining.Models
         //public List<string> List2 { get; set; }
         //public int[] Array { get; set; }
         //public string[] Array2 { get; set; }
-        public ArrayList ArrayList { get; set; }
-        //public Dictionary<string, string> Dictionary { get; set; }
+        //public ArrayList ArrayList { get; set; } = new ArrayList();
+        public Dictionary<int, string> Dictionary { get; set; }
 
         //public DataTable DataTable { get; set; }
         //public DataSet DataSet { get; set; }
