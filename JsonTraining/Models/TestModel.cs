@@ -161,7 +161,7 @@ namespace JsonTraining.Models
         //public int[] Array { get; set; }
         //public string[] Array2 { get; set; }
         //public ArrayList ArrayList { get; set; } = new ArrayList();
-        public Dictionary<int, string> Dictionary { get; set; }
+        public Dictionary<int, string> Dictionary { get; set; } 
 
         //public DataTable DataTable { get; set; }
         //public DataSet DataSet { get; set; }
