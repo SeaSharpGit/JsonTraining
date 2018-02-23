@@ -286,13 +286,39 @@ namespace JsonTraining.Helpers
             //判断Dictionary
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
             {
+                var x = new Dictionary<string, string>();
                 dynamic dic = items;
                 sb.Append("{");
                 foreach (var item in dic)
                 {
+                    var sb2 = new StringBuilder();
+                    AppendString(item.Key, ref sb2);
+                    var key = sb2.ToString();
+                    if (key.StartsWith("\"") && key.EndsWith("\""))
+                    {
+                        key = key.Substring(1, key.Length - 2);
+                    }
+
+                    var sb3 = new StringBuilder();
+                    AppendString(item.Value, ref sb3);
+                    var value = sb3.ToString();
+                    if (value.StartsWith("\"") && value.EndsWith("\""))
+                    {
+                        value = value.Substring(1, value.Length - 2);
+                    }
+
                     sb.Append("\"");
-                    AppendString(item.Key);
+                    sb.Append(key);
                     sb.Append("\"");
+                    sb.Append(":");
+                    sb.Append("\"");
+                    sb.Append(value);
+                    sb.Append("\"");
+                    sb.Append(",");
+                }
+                if (dic.Count >= 1)
+                {
+                    sb.Remove(sb.Length - 1, 1);
                 }
                 sb.Append("}");
             }
