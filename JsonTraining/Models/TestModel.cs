@@ -72,10 +72,10 @@ namespace JsonTraining.Models
             //Array = new int[] { 1, 2, 3 };
             //Array2 = new string[] { "1", "2", "3" };
             //ArrayList = new ArrayList() { 1, "2", true };
-            Dictionary = new Dictionary<string, string>() { { "1", "2" }, { "3", "4" } };
+            Dictionary = new Dictionary<int, string>() { { 1, "2" }, { 3, "4" }, { 5, "6" } };
 
             //var dt = new DataTable();
-            //dt.Columns.Add("Column0",typeof(bool));
+            //dt.Columns.Add("Column0", typeof(bool));
             //dt.Columns.Add("Column1");
             //dt.Rows.Add(true, 2);
             //dt.Rows.Add(false, 4);
@@ -109,7 +109,6 @@ namespace JsonTraining.Models
             //BigIntegerNullable = new BigInteger(1);
             //Uri = new Uri("https://www.baidu.com");
             //Enum = EnumModel.Second;
-            //Struct = new StructModel() { Age = 1, Name = "2" };
             #endregion
 
         }
@@ -161,7 +160,7 @@ namespace JsonTraining.Models
         //public int[] Array { get; set; }
         //public string[] Array2 { get; set; }
         //public ArrayList ArrayList { get; set; } = new ArrayList();
-        public Dictionary<string, string> Dictionary { get; set; }
+        public Dictionary<int, string> Dictionary { get; set; }
 
         //public DataTable DataTable { get; set; }
         //public DataSet DataSet { get; set; }
@@ -180,7 +179,6 @@ namespace JsonTraining.Models
         //public BigInteger? BigIntegerNullable { get; set; }
         //public Uri Uri { get; set; }
         //public EnumModel Enum { get; set; } = EnumModel.Second;
-        //public StructModel Struct { get; set; }
         #endregion
 
     }

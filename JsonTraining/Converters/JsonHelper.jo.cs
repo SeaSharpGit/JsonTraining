@@ -25,7 +25,7 @@ namespace JsonTraining.Helpers
 
         private static object CreateObject(Type type, string json)
         {
-            if (json == "null")
+            if (json == "null" || json == null)
             {
                 return null;
             }
@@ -117,27 +117,29 @@ namespace JsonTraining.Helpers
         #region JsonToUri
         private static object JsonToUri(string json)
         {
-            if (json.Length >= 2)
+            if (json.StartsWith("\"") && json.EndsWith("\""))
             {
                 json = json.Substring(1, json.Length - 2);
-                return new Uri(json);
             }
-            throw new Exception("string转Uri错误：" + json);
+            return new Uri(json);
         }
         #endregion
 
         #region JsonToGuid
         private static Guid JsonToGuid(string json)
         {
-            if (json.Length >= 2)
+            if (json.StartsWith("\"") && json.EndsWith("\""))
             {
                 json = json.Substring(1, json.Length - 2);
-                if (Guid.TryParse(json, out Guid guid))
-                {
-                    return guid;
-                }
             }
-            throw new Exception("string转Guid错误：" + json);
+            if (Guid.TryParse(json, out Guid guid))
+            {
+                return guid;
+            }
+            else
+            {
+                throw new Exception("string转Guid错误：" + json);
+            }
         }
         #endregion
 
@@ -323,72 +325,83 @@ namespace JsonTraining.Helpers
         #region JsonToString
         private static string JsonToString(string json)
         {
-            if (json.Length >= 2)
+            if (json.StartsWith("\"") && json.EndsWith("\""))
             {
-                json = json.Substring(1, json.Length - 2).Replace("\\\"", "\"");
-                return json;
+                json = json.Substring(1, json.Length - 2);
             }
-            throw new Exception("json转string错误：" + json);
+            return json.Replace("\\\"", "\"");
         }
         #endregion
 
         #region JsonToChar
         private static char JsonToChar(string json)
         {
-            if (json.Length >= 2)
+            if (json.StartsWith("\"") && json.EndsWith("\""))
             {
                 json = json.Substring(1, json.Length - 2);
-                if (char.TryParse(json, out char c))
-                {
-                    return c;
-                }
             }
-            throw new Exception("string转char错误：" + json);
+            if (char.TryParse(json, out char c))
+            {
+                return c;
+            }
+            else
+            {
+                throw new Exception("string转char错误：" + json);
+            }
         }
         #endregion
 
         #region JsonToTimeSpan
         private static TimeSpan JsonToTimeSpan(string json)
         {
-            if (json.Length >= 2)
+            if (json.StartsWith("\"") && json.EndsWith("\""))
             {
                 json = json.Substring(1, json.Length - 2);
-                if (TimeSpan.TryParse(json, out TimeSpan ts))
-                {
-                    return ts;
-                }
             }
-            throw new Exception("string转TimeSpan错误：" + json);
+            if (TimeSpan.TryParse(json, out TimeSpan ts))
+            {
+                return ts;
+            }
+            else
+            {
+                throw new Exception("string转TimeSpan错误：" + json);
+            }
         }
         #endregion
 
         #region JsonToDateTimeOffset
         private static DateTimeOffset JsonToDateTimeOffset(string json)
         {
-            if (json.Length >= 2)
+            if (json.StartsWith("\"") && json.EndsWith("\""))
             {
                 json = json.Substring(1, json.Length - 2);
-                if (DateTimeOffset.TryParse(json, out DateTimeOffset off))
-                {
-                    return off;
-                }
             }
-            throw new Exception("string转DateTimeOffset错误：" + json);
+            if (DateTimeOffset.TryParse(json, out DateTimeOffset off))
+            {
+                return off;
+            }
+            else
+            {
+                throw new Exception("string转DateTimeOffset错误：" + json);
+            }
         }
         #endregion
 
         #region JsonToDateTime
         private static DateTime JsonToDateTime(string json)
         {
-            if (json.Length >= 2)
+            if (json.StartsWith("\"") && json.EndsWith("\""))
             {
                 json = json.Substring(1, json.Length - 2);
-                if (DateTime.TryParse(json, out DateTime time))
-                {
-                    return time;
-                }
             }
-            throw new Exception("string转DateTime错误：" + json);
+            if (DateTime.TryParse(json, out DateTime time))
+            {
+                return time;
+            }
+            else
+            {
+                throw new Exception("string转DateTime错误：" + json);
+            }
         }
         #endregion
 
@@ -642,6 +655,7 @@ namespace JsonTraining.Helpers
         }
         #endregion
 
+        #region JsonToIEnumerable
         private static object JsonToIEnumerable(Type type, string json)
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
@@ -736,6 +750,7 @@ namespace JsonTraining.Helpers
 
             return null;
         }
+        #endregion
 
         #region JsonToArraryList
         private static object JsonToArrayList(Type type, List<string> list)
@@ -764,78 +779,91 @@ namespace JsonTraining.Helpers
         private static object JsonToDictionary(Type type, string json)
         {
             var model = Activator.CreateInstance(type);
-            if (string.IsNullOrEmpty(json) || !json.StartsWith("{") || !json.EndsWith("}"))
+            if (!json.StartsWith("{") || !json.EndsWith("}"))
             {
                 return model;
             }
 
-            json = json.Substring(1, json.Length - 2);
+            json = json.Substring(1, json.Length - 2) + ",";
+            var list = new List<string>();
+            while (!String.IsNullOrEmpty(json))
+            {
+                var isString = false;//引号
+                var dCount = 0;//大括号{}
+                var jCount = 0;//尖括号[]
+                var isAdd = false;
+                for (int i = 0; i < json.Length; i++)
+                {
+                    if (isAdd)
+                    {
+                        break;
+                    }
+                    switch (json[i])
+                    {
+                        case '"':
+                            if (isString)
+                            {
+                                if (i == 0 || json[i - 1] != '\\')
+                                {
+                                    isString = false;
+                                }
+                            }
+                            else
+                            {
+                                isString = true;
+                            }
+                            break;
+                        case '{':
+                            if (!isString)
+                            {
+                                dCount++;
+                            }
+                            break;
+                        case '}':
+                            if (!isString)
+                            {
+                                dCount--;
+                            }
+                            break;
+                        case '[':
+                            if (!isString)
+                            {
+                                jCount++;
+                            }
+                            break;
+                        case ']':
+                            if (!isString)
+                            {
+                                jCount--;
+                            }
+                            break;
+                        case ',':
+                            if (!isString && dCount == 0 && jCount == 0)
+                            {
+                                list.Add(json.Substring(0, i));
+                                json = json.Substring(i + 1);
+                                isAdd = true;
+                            }
+                            break;
+                    }
+                }
+            }
 
-            //var typeT = type.GenericTypeArguments[0];
-            //Assembly assembly = Assembly.Load("mscorlib.dll");
-            //Type typeClass = assembly.GetType("System.Collections.IDictionary");
-            //foreach (var item in list)
-            //{
-            //    var json = item.Substring(7, item.Length - 8);
-            //    var isString = false;//引号
-            //    var dCount = 0;//大括号{}
-            //    var jCount = 0;//尖括号[]
-            //    for (int i = 0; i < item.Length; i++)
-            //    {
-            //        switch (item[i])
-            //        {
-            //            case '"':
-            //                if (isString)
-            //                {
-            //                    if (i == 0 || item[i - 1] != '\\')
-            //                    {
-            //                        isString = false;
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    isString = true;
-            //                }
-            //                break;
-            //            case '{':
-            //                if (!isString)
-            //                {
-            //                    dCount++;
-            //                }
-            //                break;
-            //            case '}':
-            //                if (!isString)
-            //                {
-            //                    dCount--;
-            //                }
-            //                break;
-            //            case '[':
-            //                if (!isString)
-            //                {
-            //                    jCount++;
-            //                }
-            //                break;
-            //            case ']':
-            //                if (!isString)
-            //                {
-            //                    jCount--;
-            //                }
-            //                break;
-            //            case ',':
-            //                if (!isString && dCount == 0 && jCount == 0)
-            //                {
-            //                    //list.Add(json.Substring(0, i));
-            //                    //json = json.Substring(i + 1);
-            //                }
-            //                break;
-            //        }
-            //    }
+            Assembly assembly = Assembly.Load("mscorlib.dll");
+            Type typeClass = assembly.GetType("System.Collections.IDictionary");
+            foreach (var item in list)
+            {
+                var typeTs = type.GenericTypeArguments;
+                var index = item.IndexOf(":");
+                var key = item.Substring(1, index - 2);
+                var value = item.Substring(index + 2, item.Length - index - 3);
+                var objk = CreateObject(typeTs[0], key);
+                var objv = CreateObject(typeTs[1], value);
 
-            //    var value = CreateObject(typeT, item);
-            //    var params_type = new Type[2] { typeof(object), typeof(object) };
-            //    var params_obj = new Object[1] { value };
-            //    typeClass.GetMethod("IDictionary", params_type).Invoke(model, params_obj);
-            //}
+                var types = new Type[2] { typeof(object), typeof(object) };
+                var objs = new Object[2] { objk, objv };
+                typeClass.GetMethod("Add", types).Invoke(model, objs);
+            }
             return model;
         }
         #endregion
@@ -875,7 +903,7 @@ namespace JsonTraining.Helpers
             }
             return model;
         }
-        #endregion 
+        #endregion
 
 
     }
