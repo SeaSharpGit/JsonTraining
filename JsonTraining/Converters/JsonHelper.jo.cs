@@ -764,6 +764,13 @@ namespace JsonTraining.Helpers
         private static object JsonToDictionary(Type type, string json)
         {
             var model = Activator.CreateInstance(type);
+            if (string.IsNullOrEmpty(json) || !json.StartsWith("{") || !json.EndsWith("}"))
+            {
+                return model;
+            }
+
+            json = json.Substring(1, json.Length - 2);
+
             //var typeT = type.GenericTypeArguments[0];
             //Assembly assembly = Assembly.Load("mscorlib.dll");
             //Type typeClass = assembly.GetType("System.Collections.IDictionary");
